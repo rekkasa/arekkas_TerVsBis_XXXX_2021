@@ -1,5 +1,2 @@
-submission/submission.pdf : submission/submission.rmd
-	R -e 'rmarkdown::render("submission/submission.rmd", output_format = "all")'
-
-submission/submission.docx : submission/submission.rmd
-	R -e 'rmarkdown::render("submission/submission.rmd", output_format = "all")'
+submission/manuscript.pdf submission/manunscript.docx : submission/manuscript.rmd
+	R -e 'rmarkdown::render("submission/manuscript.rmd", output_format = "all")'

@@ -14,7 +14,13 @@ header-includes:
   - \doublespacing
   - \usepackage[left]{lineno}
   - \linenumbers
+editor_options: 
+  chunk_output_type: console
 ---
+
+```{r, echo=FALSE, message=FALSE}
+library(tidyverse)
+```
 
 # Introduction
 Osteoporosis is a common condition characterised by decreased bone density and associated with increased risk for fragility fractures, which affects almost 30% of women aged $\geq50$ years (#Wright et al. 2017). It was estimated that in 2005, over 2 million incident fractures occurred in the United States, with hip fractures accounting for more than 70% of the costs. By 2025, annual fractures and costs could rise by almost 50% (#Cole et al. 2008).
@@ -36,10 +42,29 @@ We performed two sets of analyses. First, we derived overall treatment effect es
 
 For the second set of analyses, we used the standardized framework for risk-based assessment of treatment effect heterogeneity, that follows the directives of the PATH statement (ref framework). Following data extraction, the framework was applied in two steps. First, we derived individualized risk predictions for the three efficacy outcomes. We built the prediction models using LASSO logistic regression on the propensity score matched (1 to 4) subpopulation of the pooled treatment arms, aiming to remove any effect of measured confounding that may cause differential fit of our models across treatment arms. We considered the same large set of candidate covariates for the development of our prediction models. Time at risk was set at 730 days after study inclusion.
 
-For each outcome we used the derived prediction models to divide the population under study in 4 equally-sized subgroups, based on the quarters of the predicted risk distribution. Within each of these risk-based subgroups we developed a new propensity score model. Our analyses were performed on the propensity score matched (1 to 4) subset of the risk subgroup subset. We derived relative effect estimates using Cox proportional hazards models only with treatment as a predictor. Absolute effect estimates were calculated based on the difference of the Kaplan-Meier estimates.
+For each outcome we used the derived prediction models to divide the population under study in 4 equally-sized subgroups, based on the quarters of the predicted risk distribution. Within each of these risk-based subgroups we developed a new propensity score model. Our analyses were performed on the propensity score matched (1 to 4) subset of the risk subgroup subset. We used a set of XXX negative control outcomes, to calibrate our results for unmeasured confounding (##REFEFRENCE). We derived relative effect estimates using Cox proportional hazards models only with treatment as a predictor. Absolute effect estimates were calculated based on the difference of the Kaplan-Meier estimates.
 
 # Results
-A total of 758,879 patients were initially considered for our analyses. Of those, 18,809 received teriparatide and 740,070 received an oral bisphosphonate. Table 1 presents the patients considered in the final analyses across the 3 databases, after excluding patients experiencing the outcomes under study any time prior to cohort inclusion.
+
+```{r, echo=FALSE}
+incidenceOverall <- readRDS(here::here("data/raw/incidenceOverall.rds")) %>%
+  dplyr::filter(analysisType == "matchOnPs_1_to_4") %>%
+  dplyr::group_by(database) %>%
+  dplyr::summarise(
+    maxTreatment = max(treatmentPersons),
+    maxComparator = max(comparatorPersons),
+    .groups = "drop"
+  )
+```
+
+<!-- Need to fix the numbers. See icpe abstract -->
+A total of `r sum(incidenceOverall$maxTreatment) + sum(incidenceOverall$maxComparator)` patients were initially considered for our analyses. Of those, `r sum(incidenceOverall$maxTreatment)` received teriparatide and `r sum(incidenceOverall$maxComparator)` received an oral bisphosphonate. Table 1 presents the patients considered in the final analyses across the 3 databases, after excluding patients experiencing the outcomes under study any time prior to cohort inclusion.
+
+```{r, echo=FALSE}
+readRDS(here::here("data/raw/mappedOverallResultsNegativeControls.rds")) %>%
+  dplyr::filter(analysisType == "matchOnPs_1_to_4") %>%
+  head()
+```
 
 The random effects meta-analysis of teriparatide compared to oral bisphosphonates across the 3 considered databases gave an overall hazard ratio of 0.93 (0.78 to 1.10; 95% CI) for hip fracture, 1.09 (1.01 to 1.17; 95%CI) for major osteoporotic fracture and 1.00 (0.90 to 1.12; 95%CI) for vertebral fracture (Figures 1-3).
 
