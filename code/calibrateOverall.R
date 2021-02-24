@@ -13,7 +13,7 @@
 library(tidyverse)
 
 overallNegativeControls <- readRDS(
-  "/home/arekkas/Documents/Projects/osteoporosis/data/raw/mappedOverallResultsNegativeControls.rds"
+  "data/raw/mappedOverallResultsNegativeControls.rds"
 ) %>%
   dplyr::filter(
     analysisType == "matchOnPs_1_to_4"
@@ -21,7 +21,7 @@ overallNegativeControls <- readRDS(
   dplyr::mutate(logRr = log(estimate))
 
 overallMappedOverallRelativeResults <- readRDS(
-  "/home/arekkas/Documents/Projects/osteoporosis/data/raw/mappedOverallResults.rds"
+  "data/raw/mappedOverallResults.rds"
 ) %>%
   dplyr::filter(
     analysisType == "matchOnPs_1_to_4"
