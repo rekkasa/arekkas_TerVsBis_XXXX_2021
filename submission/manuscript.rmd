@@ -20,6 +20,18 @@ editor_options:
 
 ```{r, echo=FALSE, message=FALSE}
 library(tidyverse)
+library(knitr)
+options(scipen = 1, digits = 2)
+knit_hooks$set(
+  inline = function(x) {
+    prettyNum(
+      x, 
+      big.mark = ",",
+      decimal.mark = ".",
+      preserve.width = "individual"
+    )
+  }
+)
 ```
 
 # Introduction
@@ -38,11 +50,11 @@ Our cohorts included female new users of teriparatide or oral bisphosphonates ab
 Our primary efficacy outcome was hip fracture. Vertebral fracture and a composite major osteoporotic fracture, defined as hip, vertebral or wrist/forearm/proximal humerus fracture, were our secondary efficacy outcomes. We excluded patients that had experienced the outcome under study any time prior to treatment initiation. Patient time-at-risk started at 1 day after treatment initiation until 730 days after treatment initiation.
 
 # Statistical analyses
-We performed two sets of analyses. First, we derived overall treatment effect estimates of teriparatide compared to oral bisphosphonates regarding the three outcomes of interest. To account for potential measured confounding we developed separate propensity score models within each database using the same predefined set of measured covariates. Covariates were included in the propensity score model using regularized logistic regression (ref Tian-Schuemie simulation). We estimated treatment effects using Cox proportional hazards models with treatment as the sole covariate fitted in the 1-4 propensity score-matched subset of the considered patient population. Results from different databases were summarized using random effects meta-analysis (ref).
+We performed two sets of analyses. First, we derived overall treatment effect estimates of teriparatide compared to oral bisphosphonates regarding the three outcomes of interest. To account for potential measured confounding we developed separate propensity score models within each database using the same predefined set of measured covariates. Covariates were included in the propensity score model using regularized logistic regression (##REFERENCE Tian-Schuemie simulation). We estimated treatment effects using Cox proportional hazards models with treatment as the sole covariate fitted in the 1-4 propensity score-matched subset of the considered patient population. Results from different databases were summarized using random effects meta-analysis (##REFERECNE).
 
-For the second set of analyses, we used the standardized framework for risk-based assessment of treatment effect heterogeneity, that follows the directives of the PATH statement (ref framework). Following data extraction, the framework was applied in two steps. First, we derived individualized risk predictions for the three efficacy outcomes. We built the prediction models using LASSO logistic regression on the propensity score matched (1 to 4) subpopulation of the pooled treatment arms, aiming to remove any effect of measured confounding that may cause differential fit of our models across treatment arms. We considered the same large set of candidate covariates for the development of our prediction models. Time at risk was set at 730 days after study inclusion.
+For the second set of analyses, we used the standardized framework for risk-based assessment of treatment effect heterogeneity, that follows the directives of the PATH statement (##REFERENCE framework). Following data extraction, the framework was applied in two steps. First, we derived individualized risk predictions for the three efficacy outcomes. We built the prediction models using LASSO logistic regression on the propensity score matched (1 to 4) subpopulation of the pooled treatment arms, aiming to remove any effect of measured confounding that may cause differential fit of our models across treatment arms. We considered the same large set of candidate covariates for the development of our prediction models. Time at risk was set at 730 days after study inclusion.
 
-For each outcome we used the derived prediction models to divide the population under study in 4 equally-sized subgroups, based on the quarters of the predicted risk distribution. Within each of these risk-based subgroups we developed a new propensity score model. Our analyses were performed on the propensity score matched (1 to 4) subset of the risk subgroup subset. We used a set of XXX negative control outcomes, to calibrate our results for unmeasured confounding (##REFEFRENCE). We derived relative effect estimates using Cox proportional hazards models only with treatment as a predictor. Absolute effect estimates were calculated based on the difference of the Kaplan-Meier estimates.
+For each outcome we used the derived prediction models to divide th e population under study in 4 equally-sized subgroups, based on the quarters of the predicted risk distribution. Within each of these risk-based subgroups we developed a new propensity score model. Our analyses were performed on the propensity score matched (1 to 4) subset of the risk subgroup subset. We used a set of XXX negative control outcomes, to calibrate our results for unmeasured confounding (##REFEFRENCE). We derived relative effect estimates using Cox proportional hazards models only with treatment as a predictor. Absolute effect estimates were calculated based on the difference of the Kaplan-Meier estimates.
 
 # Results
 
@@ -61,13 +73,13 @@ incidenceOverall <- readRDS(here::here("data/raw/incidenceOverall.rds")) %>%
 A total of `r sum(incidenceOverall$maxTreatment) + sum(incidenceOverall$maxComparator)` patients were initially considered for our analyses. Of those, `r sum(incidenceOverall$maxTreatment)` received teriparatide and `r sum(incidenceOverall$maxComparator)` received an oral bisphosphonate. Table 1 presents the patients considered in the final analyses across the 3 databases, after excluding patients experiencing the outcomes under study any time prior to cohort inclusion.
 
 ```{r, echo=FALSE}
-readRDS(here::here("data/raw/mappedOverallResultsNegativeControls.rds")) %>%
-  dplyr::filter(analysisType == "matchOnPs_1_to_4") %>%
-  head()
+metaCalibrateOverall <- readRDS(
+  here::here("data/processed/metaCalibrateOverall.rds")
+)
 ```
 
-The random effects meta-analysis of teriparatide compared to oral bisphosphonates across the 3 considered databases gave an overall hazard ratio of 0.93 (0.78 to 1.10; 95% CI) for hip fracture, 1.09 (1.01 to 1.17; 95%CI) for major osteoporotic fracture and 1.00 (0.90 to 1.12; 95%CI) for vertebral fracture (Figures 1-3).
+The random effects meta-analysis of teriparatide compared to oral bisphosphonates across the 3 considered databases gave an overall hazard ratio of `r metaCalibrateOverall %>% filter(outcome == 101) %>% pull(hr)` (`r metaCalibrateOverall %>% filter(outcome == 101) %>% pull(lower)` to `r metaCalibrateOverall %>% filter(outcome == 101) %>% pull(upper)`; 95% CI) for hip fracture, `r metaCalibrateOverall %>% filter(outcome == 102) %>% pull(hr)` (`r metaCalibrateOverall %>% filter(outcome == 102) %>% pull(lower)` to `r metaCalibrateOverall %>% filter(outcome == 102) %>% pull(upper)`; 95%CI) for major osteoporotic fracture and `r metaCalibrateOverall %>% filter(outcome == 103) %>% pull(hr)` (`r metaCalibrateOverall %>% filter(outcome == 103) %>% pull(lower)` to `r metaCalibrateOverall %>% filter(outcome == 103) %>% pull(upper)`; 95%CI) for vertebral fracture (Figures 1-3).
 
-For the assessment of treatment effect heterogeneity none of the internally developed prediction models achieved high discrimination, with the models predicting the composite major osteoporotic fracture suffering the most (Table 2). However, models on hip fracture—the primary efficacy outcome—displayed adequate performance. More information on the performance of the prediction models can be found in the supplement.
+For the assessment of treatment effect heterogeneity none of the internally developed prediction models achieved high discrimination, with the models predicting the composite major osteoporotic fracture suffering the most (##Table 2). However, models on hip fracture--the primary efficacy outcome--displayed adequate performance. More information on the performance of the prediction models can be found in the supplement.
 
 When analyzing the absolute risk difference of teriparatide compared to oral bisphosphonates within strata of predicted hip fracture risk we did not observe any clear pattern except for a non-significant absolute benefit for hip fracture within the highest risk patients (Figure 4), namely 0.55% (-0.89 to 1.98; 95%CI) in MDCR, 0.97% (-0.27 to 2.22; 95%CI) in OPTUM_DOD and 0.45% (-0.56 to 1.46; 95%CI) in PANTHER. Absolute and relative treatment effect estimates within strata of predicted risk of the secondary outcomes are available in the supplement. 
