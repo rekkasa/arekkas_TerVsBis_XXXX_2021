@@ -21,6 +21,11 @@ data/processed/hipFractureAbsolute.rds               : code/extractAbsoluteHip.R
 	$<
 
 
+figures/plotMeta.pdf                                 : code/plotMetaOverall.R\
+	                                               data/processed/calibrateOverallResults.rds\
+						       data/processed/metaCalibrateOverall.rds
+	$<
+
 submission/manuscript.pdf submission/manuscript.docx : submission/manuscript.rmd\
 	                                               data/processed/metaCalibrateOverall.rds\
 						       data/processed/metaCalibrateRiskStratified.rds\
