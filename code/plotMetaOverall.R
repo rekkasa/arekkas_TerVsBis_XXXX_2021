@@ -72,6 +72,36 @@ ggplot(
     ) +
     geom_errorbar(width = 0) +
     geom_vline(xintercept = 1, linetype = 2) +
+    # geom_segment(
+    #     x     = .5, 
+    #     xend  = .95, 
+    #     y     = 0, 
+    #     yend  = 0,
+    #     arrow = arrow(ends = "first", length = unit(2, "mm")),
+    #     color = "black"
+    # ) +
+    geom_text(
+        label = "Favors\nTeriparatide", 
+        x     = .73, 
+        y     = -.1, 
+        color = "black",
+        size  = 2
+    ) +
+    # geom_segment(
+    #     x     = 1.05, 
+    #     xend  = 1.5, 
+    #     y     = 0, 
+    #     yend  = 0,
+    #     arrow = arrow(ends = "last", length = unit(2, "mm")),
+    #     color = "black"
+    # ) +
+    geom_text(
+        label = "Favors\nBisphosphonates", 
+        x     = 1.3, 
+        y     = -.1, 
+        color = "black",
+        size  = 2
+    ) +
     scale_y_continuous(
         breaks = c(1, 3, 4, 5),
         labels = c(
@@ -79,7 +109,13 @@ ggplot(
             "Optum EHR",
             "Optum (DoD)",
             "MDCR"
-        )
+        ),
+        limits = c(-.2, 5)
+    ) +
+    scale_x_continuous(
+        breaks = c(.5, 1, 1.5),
+        labels = c("0.5", "1", "1.5"),
+        limits = c(.5, 1.5)
     ) +
     scale_color_manual(
         breaks = c("meta", "single"),
@@ -101,5 +137,5 @@ ggplot(
         strip.background = element_blank()
     )
 
-ggsave("figures/plotMeta.pdf", height = 2.95, width = 6)
+ggsave("figures/plotMeta.pdf", height = 3, width = 7)
 
