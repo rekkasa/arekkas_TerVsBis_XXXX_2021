@@ -44,7 +44,7 @@ combined <- rbind(overall, metaOverall) %>%
             levels = 101:103,
             labels = c(
                 "Hip fracture",
-                "Major Osteoporotic fracture",
+                "Major osteoporotic fracture",
                 "Vertebral fracture"
             )
         )
@@ -72,14 +72,6 @@ ggplot(
     ) +
     geom_errorbar(width = 0) +
     geom_vline(xintercept = 1, linetype = 2) +
-    # geom_segment(
-    #     x     = .5, 
-    #     xend  = .95, 
-    #     y     = 0, 
-    #     yend  = 0,
-    #     arrow = arrow(ends = "first", length = unit(2, "mm")),
-    #     color = "black"
-    # ) +
     geom_text(
         label = "Favors\nTeriparatide", 
         x     = .73, 
@@ -87,14 +79,6 @@ ggplot(
         color = "black",
         size  = 2
     ) +
-    # geom_segment(
-    #     x     = 1.05, 
-    #     xend  = 1.5, 
-    #     y     = 0, 
-    #     yend  = 0,
-    #     arrow = arrow(ends = "last", length = unit(2, "mm")),
-    #     color = "black"
-    # ) +
     geom_text(
         label = "Favors\nBisphosphonates", 
         x     = 1.3, 
