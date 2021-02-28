@@ -31,6 +31,8 @@ submission/manuscript.pdf submission/manuscript.docx : submission/manuscript.rmd
 						       data/processed/metaCalibrateRiskStratified.rds\
 						       data/processed/calibrateRiskStratified.rds\
 	                                               data/processed/hipFractureAbsolute.rds\
+						       submission/references.bib\
+						       submission/jamia.csl\
 						       figures/plotMeta.pdf
 	R -e 'rmarkdown::render("submission/manuscript.rmd", output_format = "all")'
 

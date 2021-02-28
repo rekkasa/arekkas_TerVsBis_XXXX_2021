@@ -50,7 +50,7 @@ combined <- rbind(overall, metaOverall) %>%
         )
     )
 
-ggplot(
+p <- ggplot(
     data = combined,
     aes(
         x    = hr,
@@ -121,5 +121,5 @@ ggplot(
         strip.background = element_blank()
     )
 
-ggsave("figures/plotMeta.pdf", height = 3, width = 7)
+ggsave("figures/plotMeta.pdf", plot = p, height = 3, width = 7)
 
