@@ -170,5 +170,5 @@ When assessing heterogeneity of treatment effect for hip fractur    e, we estima
 
 \newpage
 ```{r plotMeta, echo=FALSE, fig.cap="This is a caption", out.width = '100%'}
-knitr::include_graphics(here::here("figures/plotMeta.pdf"))
+knitr::include_graphics(here::here("figures/plotMeta.tiff"))
 ```
