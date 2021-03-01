@@ -31,8 +31,9 @@ figures/plotAbsoluteHip.pdf figures/plotAbsoluteHip.tiff figures/plotAbsoluteHip
 	                                               data/raw/mappedOverallAbsoluteResults.rds
 	$<
 
-submission/manuscript.pdf submission/manuscript.docx : submission/manuscript.rmd\
+submission/manuscript.pdf : submission/manuscript.rmd\
 						       data/raw/incidenceOverall.rds\
+						       data/raw/predictionPerformance.rds\
 	                                               data/processed/metaCalibrateOverall.rds\
 						       data/processed/metaCalibrateRiskStratified.rds\
 						       data/processed/calibrateRiskStratified.rds\

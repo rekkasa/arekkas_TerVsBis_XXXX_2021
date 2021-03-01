@@ -54,6 +54,7 @@ $^2$ Pharmaco- and Device Epidemiology, Centre for Statistics in Medicine, Nuffi
 $^3$ Department of Public Health, Erasmus University Medical Center, Rotterdam, Netherlands
 
 \newpage
+
 \linenumbers
 # Introduction
 Osteoporosis is a common condition characterised by decreased bone density and associated with increased risk for fragility fractures, which affects almost 30% of women aged $\geq50$ years [@wright2017impact]. It was estimated that in 2005, over 2 million incident fractures occurred in the United States, with hip fractures accounting for more than 70% of the costs. By 2025, annual fractures and costs could rise by almost 50% [@Cole2008].
@@ -79,11 +80,11 @@ Our primary efficacy outcome was hip fracture. Vertebral fracture and a composit
 ##     Statistical analyses
 We carried out two sets of analyses. First, we derived overall treatment effect estimates of teriparatide compared to oral bisphosphonates regarding the three outcomes of interest. To account for potential measured confounding we developed separate large-scale propensity score models within each database based on LASSO logistic regression using the same predefined set of measured covariates [@Tian2018]. We estimated treatment effects using Cox proportional hazards models with treatment as the sole covariate fitted in the 1:4 propensity score-matched subset of the considered patient population. Results from different databases were summarized using random effects meta-analysis.
 
-For the second set of analyses, we used the standardized framework for risk-based assessment of treatment effect heterogeneity, that follows the directives of the PATH statement [@Kent2019; @KentEnE2019]. Following data extraction, the framework was applied in two steps. First, we derived individualized risk predictions for the three efficacy outcomes. We built the prediction models using LASSO logistic regression on the propensity score matched (1:4) subpopulation of the pooled treatment arms, aiming to remove any effect of measured confounding that may cause differential fit of our models across treatment arms. We considered the same large set of candidate covariates for the development of our prediction models.
+For the second set of analyses, we used the standardized framework for risk-based assessment of treatment effect heterogeneity, that follows the directives of the PATH statement [@Kent2019; @KentEnE2019]. Following data extraction, the framework was applied in two steps. First, we derived individualized risk predictions for the three efficacy outcomes. We built the prediction models using LASSO logistic regression on the propensity score matched (1:4) subpopulation of the pooled treatment arms, aiming to remove any effect of measured confounding that may cause differential fit of our models across treatment arms. We considered the same large set of candidate covariates as for the development of the propensity score models.
 
-For each outcome we used the derived prediction models to divide the population under study in 4 equally-sized subgroups, based on the quarters of the predicted risk distribution. Within each of these risk-based subgroups we developed a new propensity score model. Our analyses were performed on the propensity score matched (1:4) subset of the risk subgroup subset. We derived relative effect estimates using Cox proportional hazards models only with treatment as a predictor. Absolute effect estimates were calculated based on the difference of the Kaplan-Meier estimates, on day 730 after treatment initiation.
+For each outcome we used the derived prediction models to divide the population in 4 equally-sized subgroups, based on the quarters of the predicted risk distribution. Within each of these risk-based subgroups we developed a new propensity score model. Our analyses were performed on the propensity score matched (1:4) subset of the risk subgroup subset. We derived relative effect estimates using Cox proportional hazards models only with treatment as a predictor. Absolute effect estimates were calculated based on the difference of the Kaplan-Meier estimates, on day 730 after treatment initiation.
 
-Residual study bias from unmeasured confounding can still be present in observational studies, which often may not be visible when evaluating propensity score adjustment. To account for that, we considered a set of 126 negative control outcome experiments, where a null effect was assumed to be true. We used the estimated relative effects for these outcomes to derive an empirical approximation to the true null distribution, which was then used to calibrate the hazard ratios and their 95% confidence intervals for the 3 outcomes of interest.
+Residual study bias from unmeasured confounding can still be present in observational studies, which often may not be visible when evaluating propensity score adjustment. To account for that, we considered a set of 126 negative control outcome experiments, where a null effect was assumed to be true. We used the estimated relative effects for these outcomes to derive an empirical approximation to the true null distribution, which was then used to calibrate the hazard ratios and their 95% confidence intervals for the 3 outcomes of interest [@Schuemie2013; @Schuemie2016].
 
 \newpage
 # Results
@@ -100,7 +101,7 @@ incidenceOverall <- readRDS(here::here("data/raw/incidenceOverall.rds")) %>%
 ```
 
 <!-- Need to fix the numbers. See icpe abstract -->
-A total of `r sum(incidenceOverall$maxTreatment) + sum(incidenceOverall$maxComparator)` patients were initially considered for our analyses. Of those, `r sum(incidenceOverall$maxTreatment)` received teriparatide and `r sum(incidenceOverall$maxComparator)` received an oral bisphosphonate (##TABLE1).
+A total of `r sum(incidenceOverall$maxTreatment) + sum(incidenceOverall$maxComparator)` patients were initially considered for our analyses. Of those, `r sum(incidenceOverall$maxTreatment)` received teriparatide and `r sum(incidenceOverall$maxComparator)` received an oral bisphosphonate \@ref(tab:table1).
 
 ```{r, echo=FALSE}
 metaCalibrateOverall <- readRDS(
@@ -144,10 +145,17 @@ hipFractureAbsolute <- readRDS(
     upper    = d(100 * upper)
   )
 
+hipRiskPerformance <- readRDS(here::here("data/raw/predictionPerformance.rds")) %>%
+  filter(
+    cohort == "EntirePopulation",
+    stratOutcome == 101
+  )
+
 ```
 
-When assessing heterogeneity of treatment effect for hip fracture, we estimated calibrated hazard ratios of `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "mdcr") %>% pull(hr)` (`r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "mdcr") %>% pull(lower)` to `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "mdcr") %>% pull(upper)`; 95% CI),
-`r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "optum_dod") %>% pull(hr)` (`r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "optum_dod") %>% pull(lower)` to `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "optum_dod") %>% pull(upper)`; 95% CI) and `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "panther") %>% pull(hr)` (`r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "panther") %>% pull(lower)` to `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "panther") %>% pull(upper)`; 95% CI) within the highest risk quarter of MDCR, Optum-DOD and Optum-EHR respectively. This translated in absolute risk reduction of `r hipFractureAbsolute %>% filter(database == "mdcr") %>% pull(estimate)`% (`r hipFractureAbsolute %>% filter(database == "mdcr") %>% pull(lower)`% to `r hipFractureAbsolute %>% filter(database == "mdcr") %>% pull(upper)`%; 95% CI), `r hipFractureAbsolute %>% filter(database == "optum_dod") %>% pull(estimate)`% (`r hipFractureAbsolute %>% filter(database == "optum_dod") %>% pull(lower)`% to `r hipFractureAbsolute %>% filter(database == "optum_dod") %>% pull(upper)`%; 95% CI), `r hipFractureAbsolute %>% filter(database == "panther") %>% pull(estimate)`% (`r hipFractureAbsolute %>% filter(database == "panther") %>% pull(lower)`% to `r hipFractureAbsolute %>% filter(database == "panther") %>% pull(upper)`%; 95% CI) respectively (Figure \@ref(fig:plotAbsoluteHip)). The random effects meta-analytic calibrated hazard ratio within the highest risk quarter was `r metaCalibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101) %>% pull(hr)` (`r metaCalibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101) %>% pull(lower)` to `r metaCalibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101) %>% pull(upper)`; 95% CI) across the 3 databases. The full set of results can be explored at https://arekkas.shinyapps.io/ter_bis_3dbs/.
+The internally developed prediction models for hip fracture showed adequate performance achieving AUC of `r hipRiskPerformance %>% filter(database == "mdcr") %>% pull(auc) %>% d()`, `r hipRiskPerformance %>% filter(database == "optum_dod") %>% pull(auc) %>% d()` and `r hipRiskPerformance %>% filter(database == "panther") %>% pull(auc) %>% d()` in MDCR, Optum-DOD and Optum-EHR respectively. When assessing heterogeneity of treatment effect for hip fracture, we estimated calibrated hazard ratios of `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "mdcr") %>% pull(hr)` (`r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "mdcr") %>% pull(lower)` to `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "mdcr") %>% pull(upper)`; 95% CI),
+`r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "optum_dod") %>% pull(hr)` (`r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "optum_dod") %>% pull(lower)` to `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "optum_dod") %>% pull(upper)`; 95% CI) and `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "panther") %>% pull(hr)` (`r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "panther") %>% pull(lower)` to `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "panther") %>% pull(upper)`; 95% CI) within the highest risk quarter of MDCR, Optum-DOD and Optum-EHR respectively. This translated in absolute risk reduction of `r hipFractureAbsolute %>% filter(database == "mdcr") %>% pull(estimate)`% (`r hipFractureAbsolute %>% filter(database == "mdcr") %>% pull(lower)`% to `r hipFractureAbsolute %>% filter(database == "mdcr") %>% pull(upper)`%; 95% CI), `r hipFractureAbsolute %>% filter(database == "optum_dod") %>% pull(estimate)`% (`r hipFractureAbsolute %>% filter(database == "optum_dod") %>% pull(lower)`% to `r hipFractureAbsolute %>% filter(database == "optum_dod") %>% pull(upper)`%; 95% CI), `r hipFractureAbsolute %>% filter(database == "panther") %>% pull(estimate)`% (`r hipFractureAbsolute %>% filter(database == "panther") %>% pull(lower)`% to `r hipFractureAbsolute %>% filter(database == "panther") %>% pull(upper)`%; 95% CI) respectively (Figure \@ref(fig:plotAbsoluteHip)). The random effects meta-analytic calibrated hazard ratio within the highest risk quarter was `r metaCalibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101) %>% pull(hr)` (`r metaCalibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101) %>% pull(lower)` to `r metaCalibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101) %>% pull(upper)`; 95% CI) across the 3 databases. For the secondary outcomes (major osteoporotic fracture and vertebral fracture) we found no evidence of risk-based treatment effect heterogeneity. This was anticipated as overall effects of teriparatide on theses outcomes were not significant at the 95% confidence level. The full set of results can be explored at https://arekkas.shinyapps.io/ter_bis_3dbs/.
+
 
 <!-- How much sense does it make to look at meta-analytic hazard ratios in risk-quarters? Different models were used in each case  -->
 
@@ -171,7 +179,7 @@ When assessing heterogeneity of treatment effect for hip fracture, we estimated 
 
 \newpage
 # Tables and figures
-```{r, echo=FALSE}
+```{r table1, echo=FALSE, results='asis'}
 incidenceOverall <- readRDS(here::here("data/raw/incidenceOverall.rds"))
 incidence <- incidenceOverall %>% 
   filter(analysisType == "matchOnPs_1_to_4") %>%
@@ -208,8 +216,9 @@ incidence <- incidenceOverall %>%
     ),
   )
 
-kable(
+knitr::kable(
   incidence,
+  format   = "latex",
   longtable = TRUE,
   booktabs = TRUE,
   col.names = c(
@@ -224,7 +233,8 @@ kable(
   ),
   format.args = list(
     big.mar = ","
-  )
+  ),
+   caption = "Number of patients, person years and outcomes for each outcome across all databases."
 ) %>%
   add_header_above(c("", "", "Teriparatide" = 3, "Bisphosphonates" = 3))
   # kableExtra::add_indent(c(1, 4, 7))
