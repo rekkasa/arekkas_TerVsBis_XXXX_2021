@@ -21,9 +21,14 @@ data/processed/hipFractureAbsolute.rds               : code/extractAbsoluteHip.R
 	$<
 
 
-figures/plotMeta.pdf                                 : code/plotMetaOverall.R\
+figures/plotMeta.pdf figures/plotMeta.tiff figures/plotMeta.png &: code/plotMetaOverall.R\
 	                                               data/processed/calibrateOverallResults.rds\
 						       data/processed/metaCalibrateOverall.rds
+	$<
+
+
+figures/plotAbsoluteHip.pdf figures/plotAbsoluteHip.tiff figures/plotAbsoluteHip.png &: code/plotAbsoluteHip.R\
+	                                               data/raw/mappedOverallAbsoluteResults.rds
 	$<
 
 submission/manuscript.pdf submission/manuscript.docx : submission/manuscript.rmd\
@@ -33,6 +38,7 @@ submission/manuscript.pdf submission/manuscript.docx : submission/manuscript.rmd
 	                                               data/processed/hipFractureAbsolute.rds\
 						       submission/references.bib\
 						       submission/jamia.csl\
-						       figures/plotMeta.pdf
+						       figures/plotMeta.pdf\
+	                                               figures/plotAbsoluteHip.png
 	R -e 'rmarkdown::render("submission/manuscript.rmd", output_format = "all")'
 

@@ -20,7 +20,6 @@ csl: jamia.csl
 
 ```{r, echo=FALSE, message=FALSE}
 library(tidyverse)
-library(pander)
 library(knitr)
 
 d <- function(x, decimals = 2) {
@@ -171,4 +170,9 @@ When assessing heterogeneity of treatment effect for hip fracture, we estimated 
 \newpage
 ```{r plotMeta, echo=FALSE, fig.cap="This is a caption", out.width = '100%'}
 knitr::include_graphics(here::here("figures/plotMeta.tiff"))
+```
+
+\newpage
+```{r plotAbsoluteHip, echo=FALSE, fig.cap="This is a caption", out.width = '100%'}
+knitr::include_graphics(here::here("figures/plotAbsoluteHip.png"))
 ```

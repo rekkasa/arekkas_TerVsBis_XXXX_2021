@@ -1,5 +1,19 @@
-# Add mean predicted risk, and rectangle limits to absolute dataframe
+#!/usr/bin/env Rscript
 
+# Author: Alexandros Rekkas
+#
+# Description:
+#   Plots the risk stratified absolute difference for hip fracture with respect
+#   to estimated hip fracture risk
+# Depends:
+#   data/raw/mappedOverallAbsoluteResults.rds
+# Output:
+#   figures/plotAbsoluteHip.pdf
+#   figures/plotAbsoluteHip.tiff
+#   figures/plotAbsoluteHip.png
+# 
+# Notes:
+#   Add mean predicted risk, and rectangle limits to absolute dataframe
 
 library(tidyverse)
 
@@ -13,11 +27,16 @@ absolute <- readRDS("data/raw/mappedOverallAbsoluteResults.rds") %>%
         estimate = 100 * estimate,
         lower    = 100 * lower,
         upper    = 100 * upper,
-        stratum = case_when(
+        meanRisk = case_when(
             riskStratum == "Q1" ~1,
             riskStratum == "Q2" ~2,
             riskStratum == "Q3" ~3,
             riskStratum == "Q4" ~4
+        ),
+        database = case_when(
+            database == "mdcr" ~ "MDCR",
+            database == "optum_dod" ~ "Optum-DOD",
+            database == "panther" ~ "Optum-EHR"
         )
     )
 
@@ -30,7 +49,7 @@ dataRect <- function(xmin, xmax) {
     )
 }
 
-ggplot() +
+p <- ggplot() +
     geom_rect(
         data = dataRect(-Inf, 1.5),
         inherit.aes = FALSE,
@@ -82,7 +101,7 @@ ggplot() +
     geom_point(
         data = absolute,
         aes(
-            x = stratum,           # This will be the mean predicted risk
+            x = meanRisk,           # This will be the mean predicted risk
             y = estimate
         )
         
@@ -92,13 +111,32 @@ ggplot() +
         aes(
             ymin = lower, 
             ymax = upper, 
-            x = stratum, 
+            x = meanRisk, 
             y = estimate
         ), 
         width = 0
     ) +
     geom_hline(yintercept = 0, linetype = "dashed") +
-    facet_wrap(~database, ncol = 1) +
-    ylim(-3, 5) +
-    theme_classic()
+    facet_wrap(
+        ~database, 
+        ncol = 1,
+        strip.position = "left"
+    ) +
+    scale_y_continuous(
+        name = "Absolute risk difference (%)"
+    ) +
+    scale_x_continuous(
+        breaks = 1:4,
+        labels = paste0("Q", 1:4),
+        name = "Risk quarter"
+    ) +
+    theme_classic() +
+    theme(
+        strip.placement = "outside",
+        strip.background = element_blank()
+    )
     
+ggsave("figures/plotAbsoluteHip.pdf", plot = p, height = 5, width = 7)
+ggsave("figures/plotAbsoluteHip.tiff", plot = p, height = 5, width = 7, compression = "lzw+p")
+ggsave("figures/plotAbsoluteHip.png", plot = p, height = 5, width = 7)
+

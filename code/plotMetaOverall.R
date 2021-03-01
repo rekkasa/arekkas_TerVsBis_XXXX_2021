@@ -123,4 +123,5 @@ p <- ggplot(
 
 ggsave("figures/plotMeta.pdf", plot = p, height = 3, width = 7)
 ggsave("figures/plotMeta.tiff", plot = p, height = 3, width = 7, compression = "lzw+p")
+ggsave("figures/plotMeta.png", plot = p, height = 3, width = 7)
 
