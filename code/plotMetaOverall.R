@@ -90,8 +90,8 @@ p <- ggplot(
         breaks = c(1, 3, 4, 5),
         labels = c(
             "Summary",
-            "Optum EHR",
-            "Optum (DoD)",
+            "Optum-EHR",
+            "Optum-DOD",
             "MDCR"
         ),
         limits = c(-.2, 5)
