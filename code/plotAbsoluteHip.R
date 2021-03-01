@@ -21,7 +21,7 @@ absolute <- readRDS("data/raw/mappedOverallAbsoluteResults.rds") %>%
     filter(
         analysisType == "matchOnPs_1_to_4",
         stratOutcome == 101,
-        estOutcome == 101
+        estOutcome   == 101
     ) %>%
     mutate(
         estimate = 100 * estimate,

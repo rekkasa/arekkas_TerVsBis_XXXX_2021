@@ -32,13 +32,14 @@ figures/plotAbsoluteHip.pdf figures/plotAbsoluteHip.tiff figures/plotAbsoluteHip
 	$<
 
 submission/manuscript.pdf submission/manuscript.docx : submission/manuscript.rmd\
+						       data/raw/incidenceOverall.rds\
 	                                               data/processed/metaCalibrateOverall.rds\
 						       data/processed/metaCalibrateRiskStratified.rds\
 						       data/processed/calibrateRiskStratified.rds\
 	                                               data/processed/hipFractureAbsolute.rds\
-						       submission/references.bib\
-						       submission/jamia.csl\
 						       figures/plotMeta.pdf\
-	                                               figures/plotAbsoluteHip.png
+	                                               figures/plotAbsoluteHip.png\
+						       submission/references.bib\
+						       submission/jamia.csl
 	R -e 'rmarkdown::render("submission/manuscript.rmd", output_format = "all")'
 

@@ -13,5 +13,6 @@ Imports:
     tidyverse,
     EmpiricalCalibration,
     here,
+    kableExtra,
     meta,
     bookdown
