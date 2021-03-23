@@ -7,6 +7,7 @@
 **Objectives**: To study the comparative effectiveness of teriparatide vs bisphosphonates to reduce hip fracture risk. In addition, we stratified by predicted risk to assess treatment effect heterogeneity.
 
 # Directory structure
+```bash
 ├── arekkas_TerVsBis_XXXX_2021.Rproj
 ├── code
 │   ├── calibrateOverall.R
@@ -41,3 +42,4 @@
     ├── manuscript.rmd
     ├── reference.docx
     └── references.bib
+```
