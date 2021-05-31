@@ -291,7 +291,13 @@ predictionPerformance <- readRDS(
 				-c(
 					"description"
 				)
-			)
+			),
+		by = c(
+		    "analysisId" = "analysis_id",
+		    "treatment" = "treatment",
+		    "comparator" = "comparator",
+		    "database" = "database"
+		)
 	) 
 
 mappedOverallAbsoluteResults <-
@@ -515,7 +521,9 @@ getIncidence <- function(
 {
   incidence %>%
 		dplyr::filter(
-			.$stratOutcome %in% strat & .$estOutcome %in% est & .$treatment %in% treat & .$comparator %in% comp & .$database %in% db & .$analysisType %in% anal
+			.$stratOutcome %in% strat & .$estOutcome %in% est & 
+			    .$treatment %in% treat & .$comparator %in% comp & 
+			    .$database %in% db & .$analysisType %in% anal
 		) %>%
 		return()
 }
