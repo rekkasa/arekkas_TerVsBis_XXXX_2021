@@ -1099,7 +1099,6 @@ shiny::shinyServer(
           strat = input$stratOutcome,
           coh = input$predictionPopulation,
           db = input$database,
-          anal = input$analysis,
           predictionPerformance = predictionPerformance
         )
         return(res)
@@ -1209,33 +1208,77 @@ shiny::shinyServer(
         dat <- overallResultSubset() %>%
           dplyr::mutate(logRr = log(estimate))
         ncs <- overallNegativeControlsSubset()
-        null <- EmpiricalCalibration::fitNull(
-          logRr = ncs$logRr,
-          seLogRr = ncs$seLogRr
-        )
+        # null <- EmpiricalCalibration::fitNull(
+        #   logRr = ncs$logRr,
+        #   seLogRr = ncs$seLogRr
+        # )
 
-        EmpiricalCalibration::plotCalibrationEffect(
-          logRrNegatives = ncs$logRr,
-          seLogRrNegatives = ncs$seLogRr,
-          logRrPositives = dat$logRr,
-          seLogRrPositives = dat$seLogRr,
-          null = null
+        EmpiricalCalibration::plotCiCalibrationEffect(
+          logRr     = ncs$logRr,
+          seLogRr   = ncs$seLogRr,
+          trueLogRr = rep(0, length(ncs$logRr))
         )
       }
     )
+    
+    output$negativeControlsTableOverall <- DT::renderDataTable({
+      ncs <- overallNegativeControlsSubset() %>%
+        dplyr::mutate(
+          estimate = round(estimate, 2),
+          lower    = round(lower, 2),
+          upper    = round(upper, 2),
+          seLogRr  = round(seLogRr, 2)
+        ) %>%
+        dplyr::select(
+          c(
+            "negativeControlName",
+            "estimate",
+            "lower",
+            "upper",
+            "seLogRr"
+          )
+        )
+      
+      res <- DT::datatable(ncs)
+      res
+    })
 
     output$negativeControlsPlot <- shiny::renderPlot(
       {
         dat <- resultSubset()
         relative <- dat$relative %>%
           dplyr::mutate(logRr = log(estimate))
-        ncs <- negativeControlsSubset()
+        ncs <- negativeControlsSubset() %>%
+          dplyr::filter(!is.na(seLogRr))
         plotRiskStratifiedNegativeControls(
           negativeControls = ncs,
           positiveControls = relative
         )
       }
     )
+    
+    output$negativeControlsTableStratified <- DT::renderDataTable({
+      ncs <- negativeControlsSubset() %>%
+        dplyr::mutate(
+          estimate = round(estimate, 2),
+          lower    = round(lower, 2),
+          upper    = round(upper, 2),
+          seLogRr  = round(seLogRr, 2)
+        ) %>%
+        dplyr::select(
+          c(
+            "negativeControlName",
+            "riskStratum",
+            "estimate",
+            "lower",
+            "upper",
+            "seLogRr"
+          )
+        )
+      
+      res <- DT::datatable(ncs)
+      res
+    })
 
     showInfoBox <- function(title, htmlFileName) {
       showModal(

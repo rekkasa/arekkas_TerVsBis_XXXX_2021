@@ -153,9 +153,9 @@ shiny::shinyUI(
                   ),
                   shiny::fluidRow(
                     shinydashboard::box(
-                      status = "info",
-                      title = "Covariate balance table",
-                      width = NULL,
+                      status      = "info",
+                      title       = "Covariate balance table",
+                      width       = NULL,
                       collapsible = TRUE,
                       DT::dataTableOutput("overallBalanceTable")
                     )
@@ -163,9 +163,26 @@ shiny::shinyUI(
                 ),
                 shiny::tabPanel(
                   "Systematic error",
-                  shiny::plotOutput(
-                    "overallNegativeControlsPlot",
-                    height = "600px"
+                  shiny::fluidRow(
+                    shinydashboard::box(
+                      status      = "info",
+                      title       = "Negative controls plot",
+                      width       = NULL,
+                      collapsible = TRUE,
+                      shiny::plotOutput(
+                        "overallNegativeControlsPlot",
+                        height = "600px"
+                      )
+                    )
+                  ),
+                  shiny::fluidRow(
+                    shinydashboard::box(
+                      status      = "info",
+                      title       = "Negative controls table",
+                      width       = NULL,
+                      collapsible = TRUE,
+                      DT::dataTableOutput("negativeControlsTableOverall")
+                    )
                   )
                 )
               )
@@ -191,9 +208,26 @@ shiny::shinyUI(
             ),
             shiny::tabPanel(
               "Systematic Error",
-              shiny::plotOutput(
-                "negativeControlsPlot",
-                height = "600px"
+              shiny::fluidRow(
+                shinydashboard::box(
+                  status = "info",
+                  title = "Negative controls plot",
+                  width = NULL,
+                  collapsible = TRUE,
+                  shiny::plotOutput(
+                    "negativeControlsPlot",
+                    height = "600px"
+                  )
+                )
+              ),
+              shiny::fluidRow(
+                shinydashboard::box(
+                  status = "info",
+                  title = "Negative controls table",
+                  width = NULL,
+                  collapsible = TRUE,
+                  DT::dataTableOutput("negativeControlsTableStratified")
+                )
               )
             )
           )

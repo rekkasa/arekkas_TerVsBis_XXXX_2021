@@ -4,7 +4,6 @@ library(RColorBrewer)
 
 analysisPath <- "data"
 
-
 mapOutcomes <- readRDS(
 	file.path(
 		analysisPath,
@@ -17,6 +16,13 @@ mapExposures <- readRDS(
 		analysisPath,
 		"map_exposures.rds"
 	)
+)
+
+mapNegativeControls <- readRDS(
+  file.path(
+    analysisPath,
+    "map_negativeControls.rds"
+  )
 )
 
 overallAnalysisFiles <- list.files(
@@ -108,6 +114,10 @@ if (file.exists(file.path(analysisPath, "mappedOverallResultsNegativeControls.rd
       "mappedOverallResultsNegativeControls.rds"
     )
   ) %>%
+    dplyr::tibble() %>%
+    dplyr::left_join(mapNegativeControls) %>%
+    dplyr::rename("negativeControlName" = "outcomeName") %>%
+    dplyr::filter(!is.na(seLogRr)) %>%
     dplyr::left_join(
       mapExposures,
       by = c(
@@ -140,6 +150,10 @@ if (file.exists(file.path(analysisPath, "negativeControls.rds"))) {
       "negativeControls.rds"
     )
   ) %>%
+    dplyr::tibble() %>%
+    dplyr::left_join(mapNegativeControls, by = c("estOutcome" = "outcomeId")) %>%
+    dplyr::rename("negativeControlName" = "outcomeName") %>%
+    dplyr::filter(!is.na(seLogRr)) %>%
     dplyr::left_join(
       mapOutcomes,
       by = c(
@@ -249,12 +263,14 @@ incidence <-
 	dplyr::select(-"comparatorId") %>%
 	dplyr::rename("comparator" = "exposure_name")
 
-predictionPerformance <- readRDS(
-	file.path(
-		analysisPath,
-		"predictionPerformance.rds"
-	)
-) %>%
+predictionPerformance <-
+	readRDS(
+		file.path(
+			analysisPath,
+			"predictionPerformance.rds"
+		)
+	) %>%
+  tibble() %>%
 	dplyr::left_join(
 		mapOutcomes,
 		by = c(
@@ -284,21 +300,7 @@ predictionPerformance <- readRDS(
 	dplyr::select(-"comparatorId") %>%
 	dplyr::rename(
 		"comparator" = "exposure_name"
-	) %>%
-	dplyr::left_join(
-		analyses %>% 
-			select(
-				-c(
-					"description"
-				)
-			),
-		by = c(
-		    "analysisId" = "analysis_id",
-		    "treatment" = "treatment",
-		    "comparator" = "comparator",
-		    "database" = "database"
-		)
-	) 
+	)
 
 mappedOverallAbsoluteResults <-
 	readRDS(
@@ -521,9 +523,7 @@ getIncidence <- function(
 {
   incidence %>%
 		dplyr::filter(
-			.$stratOutcome %in% strat & .$estOutcome %in% est & 
-			    .$treatment %in% treat & .$comparator %in% comp & 
-			    .$database %in% db & .$analysisType %in% anal
+			.$stratOutcome %in% strat & .$estOutcome %in% est & .$treatment %in% treat & .$comparator %in% comp & .$database %in% db & .$analysisType %in% anal
 		) %>%
 		return()
 }
@@ -545,19 +545,18 @@ getIncidenceOverall <- function(
 }
 
 getPredictionPerformance <- function(
-	treat,
-	comp,
-	strat,
-	coh,
-	db,
-	anal,
-	predictionPerformance
-	) {
+  treat,
+  comp,
+  strat,
+  coh,
+  db,
+  predictionPerformance
+) {
 
 	predictionPerformance %>%
 		dplyr::filter(
-			.$stratOutcome %in% strat & .$cohort %in% coh & .$treatment %in% treat & 
-				.$comparator %in% comp & .$database %in% db & .$analysis_label %in% anal
+			.$stratOutcome %in% strat & .$cohort %in% coh & .$treatment %in% treat &
+			  .$comparator %in% comp & .$database %in% db
 		) %>%
 		return()
 
@@ -783,69 +782,68 @@ getAuc <- function(
   mapOutcomes,
   analysisPath
 ) {
-
   res <- analyses %>%
-		dplyr::filter(
-			.$treatment == treat,
-			.$comparator == comp,
-			.$database == db,
-			.$analysis_label == anal
-		)
+    dplyr::filter(
+      .$treatment == treat,
+      .$comparator == comp,
+      .$database == db,
+      .$analysis_label == anal
+    )
 
-	stratOutcomeId <- mapOutcomes %>%
-		dplyr::filter(.$outcome_name == strat) %>%
-		dplyr::select("outcome_id") %>%
-		unlist()
+  stratOutcomeId <- mapOutcomes %>%
+    dplyr::filter(.$outcome_name == strat) %>%
+    dplyr::select("outcome_id") %>%
+    unlist()
 
-	treatmentId <- mapExposures %>%
-		dplyr::filter(.$exposure_name == treat) %>%
-		dplyr::select("exposure_id") %>%
-		unlist()
+  treatmentId <- mapExposures %>%
+    dplyr::filter(.$exposure_name == treat) %>%
+    dplyr::select("exposure_id") %>%
+    unlist()
 
-	comparatorId <- mapExposures %>%
-		dplyr::filter(.$exposure_name == comp) %>%
-		dplyr::select("exposure_id") %>%
-		unlist()
+  comparatorId <- mapExposures %>%
+    dplyr::filter(.$exposure_name == comp) %>%
+    dplyr::select("exposure_id") %>%
+    unlist()
 
-	pathList <- file.path(
-		analysisPath,
-		paste(
-			paste(
-				"auc",
-				predictionPopulation,
-				res$analysis_id,
-				res$database,
-				treatmentId,
-				comparatorId,
-				stratOutcomeId,
-				sep = "_"
-			),
-			"rds",
-			sep = "."
-		)
-	)
+  pathList <- file.path(
+    analysisPath,
+    paste(
+      paste(
+        "auc",
+        predictionPopulation,
+        res$analysis_id,
+        res$database,
+        treatmentId,
+        comparatorId,
+        stratOutcomeId,
+        sep = "_"
+      ),
+      "rds",
+      sep = "."
+    )
+  )
 
 
-	aucResultList <- lapply(
-		pathList,
-		readRDS
-	)
+  aucResultList <- lapply(
+    pathList,
+    readRDS
+  )
 
-	names(aucResultList) <- predictionPopulation
+  names(aucResultList) <- predictionPopulation
 
-	aucResultList %>%
-		dplyr::bind_rows(
-			.id = "cohort"
-		) %>%
-		return()
+  aucResultList %>%
+    dplyr::bind_rows(
+      .id = "cohort"
+    ) %>%
+    return()
 }
 
 
 getCalibration <- function(
-	treat,
-	comp,
-	strat,
-	db,
+  treat,
+  comp,
+  strat,
+  db,
 	anal,
 	predictionPopulation,
 	analyses,
@@ -1565,23 +1563,28 @@ plotRiskStratifiedNegativeControls <- function(
     negativeControlsSubset <- negativeControls %>%
       filter(riskStratum == riskStrata[i])
 
-    null <- EmpiricalCalibration::fitNull(
+    # null <- EmpiricalCalibration::fitNull(
+    #   logRr   = log(negativeControlsSubset$estimate),
+    #   seLogRr = negativeControlsSubset$seLogRr
+    # )
+    # 
+    # positiveControlsSubset <- positiveControls %>%
+    #   dplyr::filter(
+    #     riskStratum == paste0("Q", i)
+    #   )
+
+    plots[[i]] <- EmpiricalCalibration::plotCiCalibrationEffect(
       logRr   = log(negativeControlsSubset$estimate),
-      seLogRr = negativeControlsSubset$seLogRr
+      seLogRr = negativeControlsSubset$seLogRr,
+      trueLogRr = rep(0, length(negativeControlsSubset$estimate))
     )
-
-    positiveControlsSubset <- positiveControls %>%
-      dplyr::filter(
-        riskStratum == paste0("Q", i)
-      )
-
-    plots[[i]] <- EmpiricalCalibration::plotCalibrationEffect(
-      logRrNegatives   = log(negativeControlsSubset$estimate),
-      seLogRrNegatives = negativeControlsSubset$seLogRr,
-      logRrPositives   = log(positiveControlsSubset$estimate),
-      seLogRrPositives = positiveControlsSubset$seLogRr,
-      null             = null
-    )
+    # plots[[i]] <- EmpiricalCalibration::plotCiCalibrationEffect(
+    #   logRrNegatives   = log(negativeControlsSubset$estimate),
+    #   seLogRrNegatives = negativeControlsSubset$seLogRr,
+    #   logRrPositives   = log(positiveControlsSubset$estimate),
+    #   seLogRrPositives = positiveControlsSubset$seLogRr,
+    #   null             = null
+    # )
   }
   gridExtra::grid.arrange(
     grobs = plots,
@@ -1639,3 +1642,4 @@ calibrateRiskStrataCis <- function(
   }
   return(ret)
 }
+
