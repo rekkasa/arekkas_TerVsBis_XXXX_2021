@@ -8,12 +8,23 @@
 # Output:
 #     data/processed/calibrateMetaOverall.rds
 
-
 library(tidyverse)
 
-calibrateOverallResults <- readRDS(
-    here::here("data/processed/calibrateOverallResults.rds")
+args = commandArgs(trailingOnly = TRUE)
+
+fileDir <- file.path(
+    "data/processed",
+    paste0(
+        paste(
+            "calibrateOverallResults",
+            args[1],
+            sep = "_"
+        ),
+        ".rds"
+    )
 )
+
+calibrateOverallResults <- readRDS(fileDir)
 
 metaAnalysis <- function(data) {
     metaRes <- meta::metagen(
@@ -34,10 +45,24 @@ metaAnalysis <- function(data) {
     
 }
 
+fileName <- paste0(
+    paste(
+        "metaCalibrateOverall",
+        args[1],
+        sep = "_"
+    ),
+    ".rds"
+)
+
 calibrateOverallResults %>%
     group_by(outcome) %>%
     nest() %>%
     mutate(var = map(data, ~metaAnalysis(.x))) %>%
     unnest(cols = var) %>%
     select(-data) %>%
-    saveRDS("data/processed/metaCalibrateOverall.rds")
+    saveRDS(
+        file.path(
+            "data/processed",
+            fileName
+        )
+    )

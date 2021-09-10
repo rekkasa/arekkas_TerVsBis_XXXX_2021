@@ -1,0 +1,13 @@
+name: ter_bis_analyses
+title: ter_bis_analyses
+username:
+account: arekkas
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4341641
+bundleId: 4799093
+url: https://arekkas.shinyapps.io/ter_bis_analyses/
+when: 1625743865.28417
+lastSyncTime: 1625743865.2842
+asMultiple: FALSE
+asStatic: FALSE

@@ -9,8 +9,21 @@
 #     data/processed/metaCalibrateRiskStratified.rds
 
 library(tidyverse)
+args = commandArgs(trailingOnly = TRUE)
 
-calibrateRiskStratified <- readRDS("data/processed/calibrateRiskStratified.rds")
+fileDir <- file.path(
+    "data/processed",
+    paste0(
+        paste(
+            "calibrateRiskStratified",
+            args[1],
+            sep = "_"
+        ),
+        ".rds"
+    )
+)
+
+calibrateRiskStratified <- readRDS(fileDir)
 
 metaAnalysisRiskStratified <- function(data) {
     
@@ -31,6 +44,16 @@ metaAnalysisRiskStratified <- function(data) {
     return(res)
 }
 
+
+fileName <- paste0(
+    paste(
+        "metaCalibrateRiskStratified",
+        args[1],
+        sep = "_"
+    ),
+    ".rds"
+)
+
 calibrateRiskStratified %>%
     group_by(stratOutcome, estOutcome, riskStratum) %>%
     nest() %>%
@@ -42,4 +65,9 @@ calibrateRiskStratified %>%
     ) %>%
     unnest(meta) %>%
     select(-data) %>%
-    saveRDS("data/processed/metaCalibrateRiskStratified.rds")
+    saveRDS(
+        file.path(
+            "data/processed",
+            fileName
+        )
+    )

@@ -10,18 +10,44 @@
 #   figures/plotMeta.pdf
 
 library(tidyverse)
+suffix <- "age_50_tr_1_q_25_75"
 
-calibrateOverallResults <- readRDS("data/processed/calibrateOverallResults.rds")
-metaCalibrateOverall    <- readRDS("data/processed/metaCalibrateOverall.rds")
+calibrateOverallResults <- readRDS(
+    file.path(
+        "data/processed",
+        paste0(
+            paste(
+                "calibrateOverallResults",
+                suffix,
+                sep = "_"
+            ),
+            ".rds"
+        )
+    )
+)
+
+metaCalibrateOverall <- readRDS(
+    file.path(
+        "data/processed",
+        paste0(
+            paste(
+                "metaCalibrateOverall",
+                suffix,
+                sep = "_"
+            ),
+            ".rds"
+        )
+    )
+)
 
 overall <- calibrateOverallResults %>%
     select(-contains("Rr")) %>%
     mutate(
         type = "single",
         position = case_when(
-            database == "mdcr" ~ 5,
-            database == "optum_dod" ~ 4,
-            database == "panther" ~ 3
+            database == "ccae" ~ 5,
+            database == "optum_extended_dod" ~ 4,
+            database == "optum_ehr" ~ 3
         )
     )
 
@@ -36,8 +62,8 @@ combined <- rbind(overall, metaOverall) %>%
     mutate(
         database = factor(
             x = database,
-            levels = c("overall", "optum_dod", "panther", "mdcr"),
-            labels = c("Overall", "OPTUM (DoD)", "Panther", "MDCR")
+            levels = c("overall", "optum_extended_dod", "optum_ehr", "ccae"),
+            labels = c("Overall", "OPTUM (DoD)", "Panther", "CCAE")
         ),
         outcome = factor(
             x = outcome,
@@ -73,15 +99,15 @@ p <- ggplot(
     geom_errorbar(width = 0) +
     geom_vline(xintercept = 1, linetype = 2) +
     geom_text(
-        label = "Favors\nTeriparatide", 
-        x     = .73, 
+        label = "Favors Teriparatide", 
+        x     = .45, 
         y     = -.1, 
         color = "black",
         size  = 2
     ) +
     geom_text(
-        label = "Favors\nBisphosphonates", 
-        x     = 1.3, 
+        label = "Favors Bisphosphonates", 
+        x     = 1.675, 
         y     = -.1, 
         color = "black",
         size  = 2
@@ -92,14 +118,14 @@ p <- ggplot(
             "Summary",
             "Optum-EHR",
             "Optum-DOD",
-            "MDCR"
+            "CCAE"
         ),
         limits = c(-.2, 5)
     ) +
     scale_x_continuous(
-        breaks = c(.5, 1, 1.5),
-        labels = c("0.5", "1", "1.5"),
-        limits = c(.5, 1.5)
+        breaks = c(0, 1, 2),
+        labels = c("0", "1", "2"),
+        limits = c(0, 2.2)
     ) +
     scale_color_manual(
         breaks = c("meta", "single"),
@@ -122,6 +148,6 @@ p <- ggplot(
     )
 
 ggsave("figures/plotMeta.pdf", plot = p, height = 3, width = 7)
-ggsave("figures/plotMeta.tiff", plot = p, height = 3, width = 7, compression = "lzw+p")
+ggsave("figures/plotMeta.tiff", plot = p, height = 3, width = 7, compression = "lzw+p", dpi = 1000)
 ggsave("figures/plotMeta.png", plot = p, height = 3, width = 7)
 

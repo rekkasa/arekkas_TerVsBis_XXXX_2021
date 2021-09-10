@@ -9,14 +9,25 @@
 # Output:
 #   data/processed/calibrateOverallResults.rds
 
-
 library(tidyverse)
+
+args = commandArgs(trailingOnly = TRUE)
+
+fileName <- paste0(
+    paste(
+        "calibrateOverallResults",
+        args[1],
+        sep = "_"
+    ),
+    ".rds"
+)
 
 overallNegativeControls <- readRDS(
   "data/raw/mappedOverallResultsNegativeControls.rds"
 ) %>%
   dplyr::filter(
-    analysisType == "matchOnPs_1_to_4"
+    analysisType == args[1],
+    database %in% args[-1]
   ) %>%
   dplyr::mutate(logRr = log(estimate))
 
@@ -24,7 +35,8 @@ overallMappedOverallRelativeResults <- readRDS(
   "data/raw/mappedOverallResults.rds"
 ) %>%
   dplyr::filter(
-    analysisType == "matchOnPs_1_to_4"
+    analysisType == args[1],
+    database %in% args[-1]
   ) %>%
   mutate(logRr = log(estimate))
 
@@ -55,4 +67,9 @@ overallMappedOverallRelativeResults %>%
     upper = exp(logUb95Rr)
   ) %>%
   tidyr::separate(id, c("database", "outcome"), ":") %>%
-  saveRDS("data/processed/calibrateOverallResults.rds")
+  saveRDS(
+    file.path(
+      "data/processed",
+      fileName
+    )
+  )

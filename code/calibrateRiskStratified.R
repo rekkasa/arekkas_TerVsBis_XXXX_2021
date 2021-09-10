@@ -9,24 +9,37 @@
 # Output:
 #   data/processed/calibrateRiskStratified.rds
 
-
 library(tidyverse)
+
+args = commandArgs(trailingOnly = TRUE)
+fileName <- paste0(
+    paste(
+        "calibrateRiskStratified",
+        args[1],
+        sep = "_"
+    ),
+    ".rds"
+)
 
 negativeControls <- readRDS(
     "data/raw/negativeControls.rds"
 ) %>%
     dplyr::filter(
-        analysisType == "matchOnPs_1_to_4"
+        analysisType == args[1],
+        database %in% args[-1]
     ) %>%
-    dplyr::mutate(logRr = log(HR))
+    dplyr::mutate(logRr = log(estimate))
 
 relativeResults <- readRDS(
-        "data/raw/mappedOverallRelativeResults.rds"
+    "data/raw/mappedOverallRelativeResults.rds"
+) %>%
+    filter(
+        analysisType == args[1],
+        database %in% args[-1]
     ) %>%
-    dplyr::filter(
-        analysisType == "matchOnPs_1_to_4"
-    ) %>%
-    mutate(logRr = log(estimate))
+    mutate(
+        logRr = log(estimate)
+    )
 
 
 
@@ -63,4 +76,9 @@ tibble(relativeResults) %>%
     ) %>% 
     unnest(pp) %>%
     select(-data) %>%
-    saveRDS("data/processed/calibrateRiskStratified.rds")
+    saveRDS(
+        file.path(
+            "data/processed",
+            fileName
+        )
+    )
