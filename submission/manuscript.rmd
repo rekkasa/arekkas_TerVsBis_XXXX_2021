@@ -111,6 +111,28 @@ large real-world databases.
 \newpage
 # Methods
 ## Study design
+
+We performed a retrospective new user cohort study to estimate the effectiveness
+of teriparatide compared to oral bisphosphonates in patients with
+osteoporosis [@Ryan2013]. We included female participants above the age of 50
+with established osteoporosis (any condition occurrence of hip, wrist, spine or
+shoulder/humerus fracture in their history, prior to treatment initiation) and
+at least 365 days of continuous observation period before the index event.
+Patients were considered to be new-users if they received no anti-osteoporosis
+drugs (raloxifene, bazedoxifene, denosumab, abaloparatide, romosozumab) 365 days
+prior to treatment initiation with teriparatide or an oral bisphosphonate.
+
+As a secondary analysis, we evaluated treatment effect heterogeneity using a risk-based approach. The 
+
+Our primary efficacy outcome was hip fracture. Vertebral fracture and a
+composite major osteoporotic fracture, defined as hip, vertebral or
+wrist/forearm/proximal humerus fracture, were our secondary efficacy outcomes.
+We excluded patients that had experienced the outcome under study any time
+prior to treatment initiation. Patient time-at-risk started 1 day after
+treatment initiation and finished 730 days after treatment initiation.
+
+## Data sources
+
 We ran our analyses on three US observational databases mapped to OMOP-CDM
 version. More specifically:
 
@@ -122,22 +144,6 @@ supplemental coverage.
 insurance.
 - **Optum de-identified Electronic Health Record Dataset (Optum-EHR)** is an
   EHR database including Humedica’s Electronic Health Record.
-
-Our cohorts included female new users of teriparatide or oral bisphosphonates
-above the age of 65 [@Ryan2013]. Patients were considered to be new-users if
-they received no anti-osteoporosis drugs (raloxifene, bazedoxifene, denosumab,
-abaloparatide, romosozumab) 365 days prior to treatment initiation with
-teriparatide or an oral bisphosphonate. We required patients to have at least
-one year of observation period before first exposure and an established
-osteoporosis diagnosis, defined as any recorded fracture of the hip, wrist,
-spine or shoulder/humerus in their recorded medical history.
-
-Our primary efficacy outcome was hip fracture. Vertebral fracture and a
-composite major osteoporotic fracture, defined as hip, vertebral or
-wrist/forearm/proximal humerus fracture, were our secondary efficacy outcomes.
-We excluded patients that had experienced the outcome under study any time
-prior to treatment initiation. Patient time-at-risk started 1 day after
-treatment initiation and finished 730 days after treatment initiation.
 
 ##     Statistical analyses
 We carried out two sets of analyses. First, we derived overall treatment effect
@@ -182,94 +188,7 @@ outcomes of interest [@Schuemie2013; @Schuemie2016].
 \newpage
 # Results
 
-```{r, echo=FALSE}
-incidenceOverall <- readRDS(here::here("data/raw/incidenceOverall.rds")) %>%
-  dplyr::filter(analysisType == "matchOnPs_1_to_4") %>%
-  dplyr::group_by(database) %>%
-  dplyr::summarise(
-    maxTreatment = max(treatmentPersons),
-    maxComparator = max(comparatorPersons),
-    .groups = "drop"
-  )
-```
 
-<!-- Need to fix the numbers. See icpe abstract -->
-A total of `r sum(incidenceOverall$maxTreatment) +
-sum(incidenceOverall$maxComparator)` patients were initially considered for our
-analyses. Of those, `r sum(incidenceOverall$maxTreatment)` received
-teriparatide and `r sum(incidenceOverall$maxComparator)` received an oral
-bisphosphonate (Table\@ref(tab:table1)).
-
-```{r, echo=FALSE}
-metaCalibrateOverall <- readRDS(
-  here::here("data/processed/metaCalibrateOverall.rds")
-) %>%
-  mutate(
-    hr = d(hr),
-    lower = d(lower),
-    upper = d(upper)
-  )
-```
-
-The random effects meta-analysis of teriparatide compared to oral
-bisphosphonates across the 3 considered databases gave a calibrated overall
-hazard ratio of `r metaCalibrateOverall %>% filter(outcome == 101) %>%
-pull(hr)` (`r metaCalibrateOverall %>% filter(outcome == 101) %>% pull(lower)`
-to `r metaCalibrateOverall %>% filter(outcome == 101) %>% pull(upper)`; 95% CI)
-for hip fracture, `r metaCalibrateOverall %>% filter(outcome == 102) %>%
-pull(hr)` (`r metaCalibrateOverall %>% filter(outcome == 102) %>% pull(lower)`
-to `r metaCalibrateOverall %>% filter(outcome == 102) %>% pull(upper)`; 95%CI)
-for major osteoporotic fracture and `r metaCalibrateOverall %>% filter(outcome
-== 103) %>% pull(hr)` (`r metaCalibrateOverall %>% filter(outcome == 103) %>%
-pull(lower)` to `r metaCalibrateOverall %>% filter(outcome == 103) %>%
-pull(upper)`; 95%CI) for vertebral fracture (Figure \@ref(fig:plotMeta)).
-
-```{r, echo=FALSE} 
-metaCalibrateRiskStratified <- readRDS(
-  here::here("data/processed/metaCalibrateRiskStratified.rds")
-) %>%
-  mutate(
-    hr = d(hr),
-    lower = d(lower),
-    upper = d(upper)
-  )
-
-calibrateRiskStratified <- readRDS(
-  here::here("data/processed/calibrateRiskStratified.rds")
-) %>%
-  mutate(
-    hr = d(exp(logRr)),
-    lower = d(exp(logLb95Rr)),
-    upper = d(exp(logUb95Rr))
-  )
-
-hipFractureAbsolute <- readRDS(
-  here::here("data/processed/hipFractureAbsolute.rds")
-) %>%
-  filter(riskStratum == "Q4") %>%
-  mutate(
-    estimate = d(100 * estimate),
-    lower    = d(100 * lower),
-    upper    = d(100 * upper)
-  )
-
-hipRiskPerformance <- readRDS(here::here("data/raw/predictionPerformance.rds")) %>%
-  filter(
-    cohort == "EntirePopulation",
-    stratOutcome == 101
-  )
-
-```
-
-The internally developed prediction models for hip fracture showed adequate performance achieving AUC of `r hipRiskPerformance %>% filter(database == "mdcr") %>% pull(auc) %>% d()`, `r hipRiskPerformance %>% filter(database == "optum_dod") %>% pull(auc) %>% d()` and `r hipRiskPerformance %>% filter(database == "panther") %>% pull(auc) %>% d()` in MDCR, Optum-DOD and Optum-EHR respectively. When assessing heterogeneity of treatment effect for hip fracture, we estimated calibrated hazard ratios of `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "mdcr") %>% pull(hr)` (`r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "mdcr") %>% pull(lower)` to `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "mdcr") %>% pull(upper)`; 95% CI),
-`r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "optum_dod") %>% pull(hr)` (`r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "optum_dod") %>% pull(lower)` to `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "optum_dod") %>% pull(upper)`; 95% CI) and `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "panther") %>% pull(hr)` (`r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "panther") %>% pull(lower)` to `r calibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101, database == "panther") %>% pull(upper)`; 95% CI) within the highest risk quarter of MDCR, Optum-DOD and Optum-EHR respectively. This translated in absolute risk reduction of `r hipFractureAbsolute %>% filter(database == "mdcr") %>% pull(estimate)`% (`r hipFractureAbsolute %>% filter(database == "mdcr") %>% pull(lower)`% to `r hipFractureAbsolute %>% filter(database == "mdcr") %>% pull(upper)`%; 95% CI), `r hipFractureAbsolute %>% filter(database == "optum_dod") %>% pull(estimate)`% (`r hipFractureAbsolute %>% filter(database == "optum_dod") %>% pull(lower)`% to `r hipFractureAbsolute %>% filter(database == "optum_dod") %>% pull(upper)`%; 95% CI), `r hipFractureAbsolute %>% filter(database == "panther") %>% pull(estimate)`% (`r hipFractureAbsolute %>% filter(database == "panther") %>% pull(lower)`% to `r hipFractureAbsolute %>% filter(database == "panther") %>% pull(upper)`%; 95% CI) respectively (Figure \@ref(fig:plotAbsoluteHip)). The random effects meta-analytic calibrated hazard ratio within the highest risk quarter was `r metaCalibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101) %>% pull(hr)` (`r metaCalibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101) %>% pull(lower)` to `r metaCalibrateRiskStratified %>% filter(riskStratum == "Q4", stratOutcome == 101, estOutcome == 101) %>% pull(upper)`; 95% CI) across the 3 databases. For the secondary outcomes (major osteoporotic fracture and vertebral fracture) we found no evidence of risk-based treatment effect heterogeneity. This was anticipated as overall effects of teriparatide on theses outcomes were not significant at the 95% confidence level. The full set of results can be explored at https://arekkas.shinyapps.io/ter_bis_3dbs/.
-
-
-<!-- How much sense does it make to look at meta-analytic hazard ratios in risk-quarters? Different models were used in each case  -->
-
-<!-- For the assessment of treatment effect heterogeneity none of the internally developed prediction models achieved high discrimination, with the models predicting the composite major osteoporotic fracture suffering the most (##Table 2). However, models on hip fracture--the primary efficacy outcome--displayed adequate performance. More information on the performance of the prediction models can be found in the supplement. -->
-
-<!-- When analyzing the absolute risk difference of teriparatide compared to oral bisphosphonates within strata of predicted hip fracture risk we did not observe any clear pattern except for a non-significant absolute benefit for hip fracture within the highest risk patients (Figure 4), namely 0.55% (-0.89 to 1.98; 95%CI) in MDCR, 0.97% (-0.27 to 2.22; 95%CI) in OPTUM_DOD and 0.45% (-0.56 to 1.46; 95%CI) in PANTHER. Absolute and relative treatment effect estimates within strata of predicted risk of the secondary outcomes are available in the supplement.  -->
 
 \newpage
 # Discussion
@@ -287,76 +206,4 @@ The internally developed prediction models for hip fracture showed adequate perf
 
 \newpage
 # Tables and figures
-```{r table1, echo=FALSE, results='asis'}
-incidenceOverall <- readRDS(here::here("data/raw/incidenceOverall.rds"))
-incidence <- incidenceOverall %>% 
-  filter(analysisType == "matchOnPs_1_to_4") %>%
-  mutate(
-    database = case_when(
-      database == "mdcr" ~ "MDCR",
-      database == "optum_dod" ~ "Optum-DOD",
-      database == "panther" ~ "Optum-EHR"
-    ),
-    treatmentDays = round(treatmentDays / 365),
-    comparatorDays = round(comparatorDays / 365)
-  ) %>%
-  select(
-    database,
-    outcomeId,
-    treatmentPersons,
-    treatmentDays,
-    treatmentOutcomes,
-    comparatorPersons,
-    comparatorDays,
-    comparatorOutcomes
-  ) %>%
-  arrange(database, outcomeId) %>%
-  mutate(
-    database = ifelse(
-      outcomeId == 101,
-      database,
-      ""
-    ),
-    outcomeId = case_when(
-      outcomeId == 101 ~ "Hip fracture",
-      outcomeId == 102 ~ "Major osteoporotic\nfracture",
-      outcomeId == 103 ~ "Vertebral fracture"
-    ),
-  )
-
-knitr::kable(
-  incidence,
-  format   = "latex",
-  longtable = TRUE,
-  booktabs = TRUE,
-  col.names = c(
-    "Database",
-    "Outcome",
-    "Persons",
-    "Person years",
-    "Events",
-    "Persons",
-    "Person years",
-    "Events"
-  ),
-  format.args = list(
-    big.mar = ","
-  ),
-   caption = "Number of patients, person years and outcomes for each outcome across all databases."
-) %>%
-  add_header_above(c("", "", "Teriparatide" = 3, "Bisphosphonates" = 3))
-  # kableExtra::add_indent(c(1, 4, 7))
-```
-
-\newpage
-```{r plotMeta, echo=FALSE, fig.cap="Calibrated hazard ratios for the 3 outcomes of interest across the 3 considered databases using a set of 126 negative controls. Values below 1 favour teriparatide, while values above 1 favour bisphosphonates.", out.width = '100%'}
-knitr::include_graphics(here::here("figures/plotMeta.png"))
-```
-
-\newpage
-```{r plotAbsoluteHip, echo=FALSE, fig.cap="Absolute risk differences wihtin quarters of predicted hip fracture risk across the 3 considered databases.", out.width = '100%'}
-knitr::include_graphics(here::here("figures/plotAbsoluteHip.png"))
-```
-
-
 
