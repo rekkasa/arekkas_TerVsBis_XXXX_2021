@@ -8,16 +8,36 @@
 # Output:
 #     data/processed/hipFractureAbsolute.rds
     
-    
+args <- commandArgs(trailingOnly = TRUE)    
+args_stratOutcome <- args[1]
+args_estOutcome <- args[2]
+args_analysisType <- args[3]
+
 library(tidyverse)
 
 absoluteResults <- readRDS("data/raw/mappedOverallAbsoluteResults.rds") %>%
     tibble()
 
+fileName <- paste0(
+  paste(
+    "hipFractureAbsolute",
+    args_analysisType,
+    args_stratOutcome,
+    args_estOutcome,
+    sep = "_"
+  ),
+  ".rds"
+)
+
 absoluteResults %>%
     filter(
-        analysisType == "matchOnPs_1_to_4",
-        stratOutcome == 101,
-        estOutcome == 101
+        analysisType == args_analysisType,
+        stratOutcome == args_stratOutcome,
+        estOutcome == args_estOutcome
     ) %>%
-    saveRDS("data/processed/hipFractureAbsolute.rds")
+    saveRDS(
+      file.path(
+        "data/processed",
+        fileName
+      )
+    )
