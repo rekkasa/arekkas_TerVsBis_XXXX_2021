@@ -1,7 +1,9 @@
 .scratch/
 .Rproj.user
 .RData
-data
+raw
+diagnostics
+*.tiff
 .Rhistory
 .Rbuildignore
 rsconnect

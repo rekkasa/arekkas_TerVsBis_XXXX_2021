@@ -51,13 +51,12 @@ figures/plotAbsoluteHip.pdf figures/plotAbsoluteHip.tiff figures/plotAbsoluteHip
 	data/raw/mappedOverallAbsoluteResults.rds
 	$<
 
+figures/overallNcPlot.tiff : code/PlotNegativeControls.R\
+	data/processed/mappedOverallResultsNegativeControls.rds\
+	data/processed/mappedOverallResults.rds
+	$<
+
 submission/manuscript.pdf : submission/manuscript.rmd\
-  data/raw/predictionPerformance.rds\
-  data/processed/calibrateRiskStratified_age_50_tr_1_q_25_75.rds\
-  data/processed/metaCalibrateRiskStratified_age_50_tr_1_q_25_75.rds\
-  data/processed/hipFractureAbsolute_age_50_tr_1_q_25_75_101_101.rds\
-  data/processed/hipFractureAbsolute_age_50_tr_1_q_25_75_101_102.rds\
-  data/processed/hipFractureAbsolute_age_50_tr_1_q_25_75_101_103.rds\
 	submission/references.bib\
 	submission/jamia.csl
 	R -e 'rmarkdown::render("submission/manuscript.rmd", output_format = "all")'

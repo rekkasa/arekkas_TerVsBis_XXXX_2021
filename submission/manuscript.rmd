@@ -118,31 +118,21 @@ women using multiple large real-world databases.
 \newpage
 # Methods
 ## Study design
-
 We performed a retrospective new user cohort study to estimate the
 effectiveness of teriparatide compared to oral bisphosphonates in
-patients with osteoporosis [@Ryan2013]. We included female
-participants above the age of 50 with established osteoporosis (any
-condition occurrence of hip, wrist, spine or shoulder/humerus fracture
-in their history, prior to treatment initiation) and at least 365 days
-of continuous observation period before the index event.  Patients
-were considered to be new-users if they received no anti-osteoporosis
-drugs (raloxifene, bazedoxifene, denosumab, abaloparatide,
-romosozumab) 365 days prior to treatment initiation with teriparatide
-or an oral bisphosphonate.
-
-We evaluated treatment effect heterogeneity using two different
-risk-based subgrouping approaches. After internally developing a hip
-fracture risk model within each database, we first assessed relative
-and absolute treatment effects in patients falling in the lowest 75%
-risk and the highest 25% risk subgroups. As a secondary approach, we
-separated patients based on current guidelines for targeting
-teriparatide treatment.... (EXPAND!!!!)
+patients with osteoporosis[8]. We included female participants above
+the age of 50 with established osteoporosis (any condition occurrence
+of hip, wrist, spine or shoulder/humerus fracture in their history,
+prior to treatment initiation) and at least 365 days of continuous
+observation period before the index event. Patients were considered to
+be new-users if they received no anti-osteoporosis drugs (raloxifene,
+bazedoxifene, denosumab, abaloparatide, romosozumab) 365 days prior to
+treatment initiation with teriparatide or an oral bisphosphonate.
 
 Our primary efficacy outcome was hip fracture. Vertebral fracture and
 a composite major osteoporotic fracture, defined as hip, vertebral or
 wrist/forearm/proximal humerus fracture, were our secondary efficacy
-outcomes.  We excluded patients that had experienced the outcome under
+outcomes. We excluded patients that had experienced the outcome under
 study any time prior to treatment initiation. Patient time-at-risk
 started 1 day after treatment initiation and finished 730 days after
 treatment initiation.
@@ -152,14 +142,27 @@ treatment initiation.
 We ran our analyses on three US observational databases mapped to OMOP-CDM
 version. More specifically:
 
-- **IBM MarketScan Medicare Supplemental Database (CCAE)** is a claims database
-  representing retirees in the United States with primary or Medicare
-supplemental coverage.
-- **Optum De-Identified Clinformatics® Data Mart Database – Date of Death
-  (Optum-DOD)** is a claims database including members of private health
-insurance.
-- **Optum de-identified Electronic Health Record Dataset (Optum-EHR)** is an
-  EHR database including Humedica’s Electronic Health Record.
+- **IMB MarketScan Commercial Database (CCAE)** includes health
+  insurance claims across the continuum of care (e.g. inpatient,
+  outpatient, outpatient pharmacy, carve-out behavioral healthcare) as
+  well as enrollment data from large employers and health plans across
+  the United States who provide private healthcare coverage for more
+  than 155 million employees, their spouses, and dependents. This
+  administrative claims database includes a variety of fee-
+  for-service, preferred provider organizations, and capitated health
+  plans.
+- **Optum De-Identified Clinformatics® Data Mart Database – Date of
+  Death (Optum-DOD)**: is derived from a database of administrative
+  health claims for members of large commercial and Medicare Advantage
+  health plans. The database includes approximately 17-19 million
+  annual covered lives, for a total of over 65 million unique lives
+  over a 12 year period (1/2007 through 12/2019). The population is
+  geographically diverse, spanning all 50 states.
+- **Optum de-identified Electronic Health Record Dataset (Optum-EHR)**
+  is derived from dozens of healthcare provider organizations in the
+  United States, that include more than 700 Hospitals and 7000
+  Clinics; treating more than 102 million patients receiving care in
+  the United States.
 
 ##     Statistical analyses
 We carried out two sets of analyses. First, we derived overall
@@ -197,6 +200,16 @@ hazards models only with treatment as a predictor. Absolute effect
 estimates were calculated based on the difference of the Kaplan-Meier
 estimates, on day 730 after treatment initiation.
 
+For each outcome we used the derived prediction models to divide the
+population in 4 equally-sized subgroups, based on the quarters of the
+predicted risk distribution. Within each of these risk-based subgroups
+we developed a new propensity score model. Our analyses were performed
+on the propensity score matched (1:4) subset of the risk subgroup
+subset. We derived relative effect estimates using Cox proportional
+hazards models only with treatment as a predictor. Absolute effect
+estimates were calculated based on the difference of the Kaplan-Meier
+estimates, on day 730 after treatment initiation.
+
 Residual study bias from unmeasured confounding can still be present
 in observational studies, which often may not be visible when
 evaluating propensity score adjustment. To account for that, we
@@ -209,164 +222,7 @@ interest [@Schuemie2013; @Schuemie2016].
 
 \newpage
 # Results
-We extracted information on a total of 28,657 patients receiving
-teriparatide and 1.02 million patients receiving an oral
-bisphosphonate across the 3 databases (Table 1).
-
-```{r, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
-calibrateOverallResults <- readRDS(here::here("data/processed/metaCalibrateOverall.rds"))
-```
-
-## Overall results
-In our overall analyses we found no difference between teriparatide
-and oral bisphosphonates in terms of hip fracture risk
-(HR 
-`r calibrateOverallResults %>% filter(outcome == "101") %>% pull(hr)`;
-`r calibrateOverallResults %>% filter(outcome == "101") %>% pull(lower)`
-to 
-`r calibrateOverallResults %>% filter(outcome == "101") %>% pull(upper)`,
-95% CI). We estimated major osteoporotic fracture risk increase (HR 
-`r calibrateOverallResults %>% filter(outcome == "102") %>% pull(hr)`;
-`r calibrateOverallResults %>% filter(outcome == "102") %>% pull(lower)` 
-to 
-`r calibrateOverallResults %>% filter(outcome == "102") %>% pull(upper)`,
-95% CI) and vertebral fracture risk increase (HR 
-`r calibrateOverallResults %>% filter(outcome == "103") %>% pull(hr)`;
-`r calibrateOverallResults %>% filter(outcome == "103") %>% pull(lower)`
-to `r calibrateOverallResults %>% filter(outcome == "103") %>% pull(upper)`,
-95% CI) with teriparatide (Figure \@ref(fig:plotMeta)).
-
 ## Treatment effect heterogeneity
-
-```{r, echo=FALSE} 
-metaCalibrateRiskStratified_25_75 <- readRDS(
-  here::here("data/processed/metaCalibrateRiskStratified_age_50_tr_1_q_25_75.rds")
-) %>%
-  mutate(
-    hr = d(hr),
-    lower = d(lower),
-    upper = d(upper)
-  )
-calibrateRiskStratified_25_75 <- readRDS(
-  here::here("data/processed/calibrateRiskStratified_age_50_tr_1_q_25_75.rds")
-) %>%
-  mutate(
-    hr = d(exp(logRr)),
-    lower = d(exp(logLb95Rr)),
-    upper = d(exp(logUb95Rr))
-  )
-hipFractureAbsolute_age_50_tr_1_q_25_75_101_101 <- readRDS(
-  here::here("data/processed/hipFractureAbsolute_age_50_tr_1_q_25_75_101_101.rds")
-) %>%
-  filter(riskStratum == "Q2") %>%
-  mutate(
-    estimate = d(100 * estimate),
-    lower    = d(100 * lower),
-    upper    = d(100 * upper)
-  )
-
-hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 <- readRDS(
-  here::here("data/processed/hipFractureAbsolute_age_50_tr_1_q_25_75_101_102.rds")
-) %>%
-  mutate(
-    estimate = d(100 * estimate),
-    lower    = d(100 * lower),
-    upper    = d(100 * upper)
-  )
-
-hipFractureAbsolute_age_50_tr_1_q_25_75_101_103 <- readRDS(
-  here::here("data/processed/hipFractureAbsolute_age_50_tr_1_q_25_75_101_103.rds")
-) %>%
-  mutate(
-    estimate = d(100 * estimate),
-    lower    = d(100 * lower),
-    upper    = d(100 * upper)
-  )
-
-hipRiskPerformance <- readRDS(here::here("data/raw/predictionPerformance.rds")) %>%
-  filter(
-    cohort == "EntirePopulation",
-    stratOutcome == 101
-  )
-```
-
-The internally developed prediction models for hip fracture showed adequate performance achieving AUC of 
-`r hipRiskPerformance %>% filter(database == "ccae") %>% pull(auc) %>% d()`,
-`r hipRiskPerformance %>% filter(database == "optum_extended_dod") %>% pull(auc) %>% d()`
-and `r hipRiskPerformance %>% filter(database == "optum_ehr") %>% pull(auc) %>% d()`
-in CCAE, Optum-DOD and Optum-EHR respectively. When assessing
-heterogeneity of treatment effect for hip fracture using a 75-25% risk
-split, we estimated calibrated hazard ratios of
-`r calibrateRiskStratified_25_75 %>% filter(riskStratum == "Q2", stratOutcome == 101, estOutcome == 101, database == "ccae") %>% pull(hr)` 
-(`r calibrateRiskStratified_25_75 %>% filter(riskStratum == "Q2", stratOutcome == 101, estOutcome == 101, database == "ccae") %>% pull(lower)` 
-to 
-`r calibrateRiskStratified_25_75 %>% filter(riskStratum == "Q2", stratOutcome == 101, estOutcome == 101, database == "ccae") %>% pull(upper)`;
-95% CI),
-`r calibrateRiskStratified_25_75 %>% filter(riskStratum == "Q2", stratOutcome == 101, estOutcome == 101, database == "optum_extended_dod") %>% pull(hr)`
-(`r calibrateRiskStratified_25_75 %>% filter(riskStratum == "Q2", stratOutcome == 101, estOutcome == 101, database == "optum_extended_dod") %>% pull(lower)`
-to 
-`r calibrateRiskStratified_25_75 %>% filter(riskStratum == "Q2", stratOutcome == 101, estOutcome == 101, database == "optum_extended_dod") %>% pull(upper)`;
-95% CI) and 
-`r calibrateRiskStratified_25_75 %>% filter(riskStratum == "Q2", stratOutcome == 101, estOutcome == 101, database == "optum_ehr") %>% pull(hr)`
-(`r calibrateRiskStratified_25_75 %>% filter(riskStratum == "Q2", stratOutcome == 101, estOutcome == 101, database == "optum_ehr") %>% pull(lower)`
-to
-`r calibrateRiskStratified_25_75 %>% filter(riskStratum == "Q2", stratOutcome == 101, estOutcome == 101, database == "optum_ehr") %>% pull(upper)`;
-95% CI) within the highest risk quarter of CCAE, Optum-DOD and Optum-EHR respectively. This translated in absolute risk reduction of
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_101 %>% filter(database == "ccae") %>% pull(estimate)`% (`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_101 %>% filter(database == "ccae") %>% pull(lower)`%
-to
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_101 %>% filter(database == "ccae") %>% pull(upper)`%;
-95% CI),
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_101 %>% filter(database == "optum_extended_dod") %>% pull(estimate)`%
-(`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_101 %>% filter(database == "optum_extended_dod") %>% pull(lower)`%
-to
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_101 %>% filter(database == "optum_extended_dod") %>% pull(upper)`%;
-95% CI), 
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_101 %>% filter(database == "optum_ehr") %>% pull(estimate)`%
-(`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_101 %>% filter(database == "optum_ehr") %>% pull(lower)`%
-to `r hipFractureAbsolute_age_50_tr_1_q_25_75_101_101 %>% filter(database == "optum_ehr") %>% pull(upper)`%;
-95% CI) respectively (Figure \@ref(fig:plotAbsoluteHip)). The random
-effects meta-analytic calibrated hazard ratio within the highest risk
-quarter was
-`r metaCalibrateRiskStratified_25_75 %>% filter(riskStratum == "Q2", stratOutcome == 101, estOutcome == 101) %>% pull(hr)`
-(`r metaCalibrateRiskStratified_25_75 %>% filter(riskStratum == "Q2", stratOutcome == 101, estOutcome == 101) %>% pull(lower)`
-to 
-`r metaCalibrateRiskStratified_25_75 %>% filter(riskStratum == "Q2", stratOutcome == 101, estOutcome == 101) %>% pull(upper)`;
-95% CI) across the 3 databases. 
-
-For major osteoporotic fractures we estimated 
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(estimate)`% (`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(lower)`%
-to
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(upper)`%;
-95% CI),
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "optum_extended_dod", riskStratum == "Q1") %>% pull(estimate)`%
-(`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "optum_extended_dod", riskStratum == "Q1") %>% pull(lower)`%
-to
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "optum_extended_dod", riskStratum == "Q1") %>% pull(upper)`%;
-95% CI), 
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "optum_ehr", riskStratum == "Q1") %>% pull(estimate)`%
-(`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "optum_ehr", riskStratum == "Q1") %>% pull(lower)`%
-to `r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "optum_ehr", riskStratum == "Q1") %>% pull(upper)`%;
-95% CI) in the lower 75% hip fracture risk patients. This was reduced to 
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "ccae", riskStratum == "Q2") %>% pull(estimate)`% (`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(lower)`%
-to
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "ccae", riskStratum == "Q2") %>% pull(upper)`%;
-95% CI),
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "optum_extended_dod", riskStratum == "Q2") %>% pull(estimate)`%
-(`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "optum_extended_dod", riskStratum == "Q2") %>% pull(lower)`%
-to
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "optum_extended_dod", riskStratum == "Q2") %>% pull(upper)`%;
-95% CI), 
-`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "optum_ehr", riskStratum == "Q2") %>% pull(estimate)`%
-(`r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "optum_ehr", riskStratum == "Q2") %>% pull(lower)`%
-to `r hipFractureAbsolute_age_50_tr_1_q_25_75_101_102 %>% filter(database == "optum_ehr", riskStratum == "Q2") %>% pull(upper)`%;
-95% CI), 
-
-For the secondary outcomes (major
-osteoporotic fracture and vertebral fracture) we found no evidence of
-risk-based treatment effect heterogeneity. This was anticipated as
-overall effects of teriparatide on theses outcomes were not
-significant at the 95% confidence level. The full set of results can
-be explored at https://arekkas.shinyapps.io/ter_bis_3dbs/.
 
 
 \newpage
