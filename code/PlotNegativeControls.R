@@ -41,14 +41,13 @@ for (i in seq_along(databases)) {
     logRrNegatives = negativeControls$logRr,
     seLogRrNegatives = negativeControls$seLogRr,
     logRrPositives = positiveResults$logRr,
-    seLogRrPositives = positiveResults$seLogRr
-  ) +
-    ggtitle(databaseLabels[i]) +
-    theme(
+    seLogRrPositives = positiveResults$seLogRr,
+    xLabel = ""
+  ) + ggtitle(databaseLabels[i]) + theme(
       plot.title = element_text(size = 38),
       axis.text.x = element_text(size = 22),
       axis.title.x  = element_text(size = 30),
-    )
+      )
   if (i == 1) {
     plot[[i]] <- plot[[i]] +
       theme(axis.title.y = element_text(size = 30))
@@ -57,8 +56,14 @@ for (i in seq_along(databases)) {
   }
 }
 
-res <- gridExtra::grid.arrange(plot[[1]], plot[[2]], plot[[3]], nrow = 1)
-
+# res <- gridExtra::grid.arrange(plot[[1]], plot[[2]], plot[[3]], nrow = 1)
+res <- cowplot::plot_grid(
+                  plot[[1]],
+                  plot[[2]],
+                  plot[[3]],
+                  nrow = 1
+                ) +
+  cowplot::draw_label("Relative risk", x = .5, y = 0, vjust = -.5, size = 30)
 
 ggsave(
   file.path("figures/OverallNcPlot.tiff"),

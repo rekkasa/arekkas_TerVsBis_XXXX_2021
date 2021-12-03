@@ -17,30 +17,36 @@ for (i in seq_along(databases)) {
     bind_rows() %>%
     tibble() %>%	
     CohortMethod::plotCovariateBalanceScatterPlot(
-      beforeLabel = "",
-      afterLabel = databaseLabels[i]
-    ) +
+      beforeLabel = " ",
+      afterLabel = " "
+      ) +
+    ggtitle(databaseLabels[i]) +
     theme_bw() +
     theme(
-      plot.title   = element_blank(),
+      plot.margin  = margin(2, .25, 2, .25, "cm"),
+      plot.title   = element_text(size = 34),
       axis.title.x = element_blank(),
       axis.text.x  = element_text(size = 22),
       axis.text.y  = element_text(size = 22),
-      axis.title   = element_text(size = 30),
-      strip.text   = element_text(size = 25),
-      strip.background = element_rect(colour = "black", fill = NA)
+      axis.title   = element_text(size = 30)
     )
   
   if (i != 1) {
     pp[[i]] <- pp[[i]] +
       theme(
-        strip.text       = element_blank(),
-        strip.background = element_blank()
+        axis.text.y = element_blank()
       )
   }
 }
 
-plot <- gridExtra::grid.arrange(pp[[1]], pp[[2]], pp[[3]], nrow = 1)
+plot <- cowplot::plot_grid(
+                  pp[[1]],
+                  pp[[2]],
+                  pp[[3]],
+                  nrow = 1
+                ) +
+  cowplot::draw_label("Before matching", x = .5, y = 0, vjust = -.5, size = 30) +
+  cowplot::draw_label("After matching", x = 0, y = .5, vjust = 1.2, angle = 90, size = 30)
 ggsave(
   "figures/OverallCovariateBalance.tiff",
   plot, 

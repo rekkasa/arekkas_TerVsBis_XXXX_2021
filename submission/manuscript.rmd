@@ -245,22 +245,22 @@ interest [@Schuemie2013; @Schuemie2016].
 # Tables and figures
 
 \newpage
-```{r overallCovariateBalance, cache = TRUE, echo = FALSE, fig.cap="Calibrated overall results"}
+```{r overallCovariateBalance, cache = TRUE, echo = FALSE, warning=FALSE, fig.cap="Calibrated overall results"}
 grid::grid.raster(tiff::readTIFF(here("figures/OverallCovariateBalance.tiff")))
 ```
 
 \newpage
-```{r overallPsDensity, cache = FALSE, echo = FALSE, fig.cap="Calibrated overall results"}
+```{r overallPsDensity, cache = FALSE, echo = FALSE, warning=FALSE, fig.cap="Calibrated overall results"}
 grid::grid.raster(tiff::readTIFF(here("figures/OverallPsDensity.tiff")))
 ```
 
 \newpage
-```{r overallNcPlot, cache = FALSE, echo = FALSE, fig.cap="Overall negative control plot."}
+```{r overallNcPlot, cache = FALSE, echo = FALSE, warning=FALSE, fig.cap="Overall negative control plot."}
 grid::grid.raster(tiff::readTIFF(here("figures/OverallNcPlot.tiff")))
 ```
 
 
 \newpage
-```{r plotMeta, echo=FALSE, fig.cap="Calibrated hazard ratios for the 3 outcomes of interest across the 3 considered databases using a set of 126 negative controls. Values below 1 favour teriparatide, while values above 1 favour bisphosphonates.", out.width = '100%'}
+```{r plotMeta, echo=FALSE, warning=FALSE, fig.cap="Calibrated hazard ratios for the 3 outcomes of interest across the 3 considered databases using a set of 126 negative controls. Values below 1 favour teriparatide, while values above 1 favour bisphosphonates.", out.width = '100%'}
 grid::grid.raster(tiff::readTIFF(here::here("figures/plotMeta.tiff")))
 ```
