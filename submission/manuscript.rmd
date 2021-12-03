@@ -22,6 +22,7 @@ csl: jamia.csl
 library(tidyverse)
 library(knitr)
 library(kableExtra)
+library(here)
 
 options(scipen=1, digits=2)
 
@@ -224,6 +225,7 @@ interest [@Schuemie2013; @Schuemie2016].
 # Results
 ## Treatment effect heterogeneity
 
+***[ Introductory stuff for Table 1 !! ]***
 
 \newpage
 # Discussion
@@ -241,6 +243,22 @@ interest [@Schuemie2013; @Schuemie2016].
 
 \newpage
 # Tables and figures
+
+\newpage
+```{r overallCovariateBalance, cache = TRUE, echo = FALSE, fig.cap="Calibrated overall results"}
+grid::grid.raster(tiff::readTIFF(here("figures/OverallCovariateBalance.tiff")))
+```
+
+\newpage
+```{r overallPsDensity, cache = FALSE, echo = FALSE, fig.cap="Calibrated overall results"}
+grid::grid.raster(tiff::readTIFF(here("figures/OverallPsDensity.tiff")))
+```
+
+\newpage
+```{r overallNcPlot, cache = FALSE, echo = FALSE, fig.cap="Overall negative control plot."}
+grid::grid.raster(tiff::readTIFF(here("figures/OverallNcPlot.tiff")))
+```
+
 
 \newpage
 ```{r plotMeta, echo=FALSE, fig.cap="Calibrated hazard ratios for the 3 outcomes of interest across the 3 considered databases using a set of 126 negative controls. Values below 1 favour teriparatide, while values above 1 favour bisphosphonates.", out.width = '100%'}

@@ -41,9 +41,9 @@ data/processed/hipFractureAbsolute_age_50_tr_1_gl_101_101 : code/extractAbsolute
 	data/raw/mappedOverallAbsoluteResults.rds
 	$< 101 101 age_50_tr_1_gl
 
-figures/plotMeta.pdf figures/plotMeta.tiff figures/plotMeta.png &: code/plotMetaOverall.R\
+figures/plotMeta.tiff : code/plotMetaOverall.R \
 	data/processed/calibrateOverallResults_age_50_tr_1_q_25_75.rds\
-  data/processed/metaCalibrateOverall_age_50_tr_1_q_25_75.rds
+	data/processed/metaCalibrateOverall.rds
 	$<
 
 
@@ -51,13 +51,23 @@ figures/plotAbsoluteHip.pdf figures/plotAbsoluteHip.tiff figures/plotAbsoluteHip
 	data/raw/mappedOverallAbsoluteResults.rds
 	$<
 
-figures/overallNcPlot.tiff : code/PlotNegativeControls.R\
+figures/OverallNcPlot.tiff : code/PlotNegativeControls.R\
 	data/processed/mappedOverallResultsNegativeControls.rds\
 	data/processed/mappedOverallResults.rds
 	$<
 
+figures/OverallCovariateBalance.tiff : code/PlotCovariateBalance.R
+	$<
+
+figures/OverallPsDensity.tiff : code/PlotPsDensity.R
+	$<
+
 submission/manuscript.pdf : submission/manuscript.rmd\
 	submission/references.bib\
-	submission/jamia.csl
+	submission/jamia.csl\
+	figures/plotMeta.tiff\
+	figures/OverallCovariateBalance.tiff\
+	figures/OverallPsDensity.tiff\
+	figures/OverallNcPlot.tiff
 	R -e 'rmarkdown::render("submission/manuscript.rmd", output_format = "all")'
 

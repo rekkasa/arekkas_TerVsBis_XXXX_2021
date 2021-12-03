@@ -26,19 +26,7 @@ calibrateOverallResults <- readRDS(
     )
 )
 
-metaCalibrateOverall <- readRDS(
-    file.path(
-        "data/processed",
-        paste0(
-            paste(
-                "metaCalibrateOverall",
-                suffix,
-                sep = "_"
-            ),
-            ".rds"
-        )
-    )
-)
+metaCalibrateOverall <- readRDS("data/processed/metaCalibrateOverall.rds")
 
 overall <- calibrateOverallResults %>%
     select(-contains("Rr")) %>%
@@ -140,14 +128,16 @@ p <- ggplot(
         values = c(23, 21)
     ) +
     xlab("Calibrated hazard ratio") +
-    theme_classic() +
+    # theme_classic() +
+    ggthemes::theme_clean() +
     theme(
-        legend.position  = "none",
-        axis.title.y     = element_blank(),
-        strip.background = element_blank()
+      legend.position  = "none",
+      axis.title.y     = element_blank(),
+      strip.background = element_blank(),
+      strip.text.x     = element_text(size = 10)
     )
 
-ggsave("figures/plotMeta.pdf", plot = p, height = 3, width = 7)
-ggsave("figures/plotMeta.tiff", plot = p, height = 3, width = 7, compression = "lzw+p", dpi = 1000)
-ggsave("figures/plotMeta.png", plot = p, height = 3, width = 7)
+# ggsave("figures/plotMeta.pdf", plot = p, height = 3, width = 7)
+ggsave("figures/plotMeta.tiff", plot = p, height = 3, width = 7, compression = "lzw+p", dpi = 600)
+# ggsave("figures/plotMeta.png", plot = p, height = 3, width = 7)
 
