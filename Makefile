@@ -46,10 +46,11 @@ figures/plotMeta.tiff : code/plotMetaOverall.R \
 	data/processed/metaCalibrateOverall.rds
 	$<
 
-
-figures/plotAbsoluteHip.pdf figures/plotAbsoluteHip.tiff figures/plotAbsoluteHip.png &: code/plotAbsoluteHip.R\
-	data/raw/mappedOverallAbsoluteResults.rds
+figures/plotMetaRiskStratified.tiff : code/plotMetaRiskStratified.R\
+	data/processed/calibrateRiskStratified_age_50_tr_1_q_25_75.rds\
+	data/processed/metaCalibrateRiskStratified.rds
 	$<
+
 
 figures/OverallNcPlot.tiff : code/PlotNegativeControls.R\
 	data/processed/mappedOverallResultsNegativeControls.rds\
@@ -60,6 +61,10 @@ figures/OverallCovariateBalance.tiff : code/PlotCovariateBalance.R
 	$<
 
 figures/OverallPsDensity.tiff : code/PlotPsDensity.R
+	$<
+
+figures/plotAbsoluteHip.tiff : code/plotAbsoluteHip.R\
+	data/processed/mappedOverallAbsoluteResults.rds
 	$<
 
 submission/manuscript.pdf : submission/manuscript.rmd\

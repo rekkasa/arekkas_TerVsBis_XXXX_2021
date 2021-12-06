@@ -172,11 +172,17 @@ bisphosphonates regarding the three outcomes of interest. To account
 for potential measured confounding we developed separate large-scale
 propensity score models within each database based on LASSO logistic
 regression using the same predefined set of measured covariates
-[@Tian2018]. We estimated treatment effects using Cox proportional
-hazards models with treatment as the sole covariate fitted in the 1:4
-propensity score-matched subset of the considered patient
-population. Hazard ratios (HR) derived in different databases were
-summarized using random effects meta-analysis.
+[@Tian2018]. To assume that treatment and comaparator cohorts stand in
+equipoise we required that the majority of the patients in both have
+preference scores between 0.3 and 0.7. We assumed that covariate
+balance had been reached, if all after-adjustment baseline
+characteristics had standardized absolute mean differences of less
+than 0.1.  We estimated treatment effects using Cox proportional
+hazards models with treatment as the sole covariate. To account for
+observed confounding we used variable ratio matching (1:10) on the
+propensity score using a caliper of 0.2 on the logit scale.  Hazard
+ratios (HR) derived in different databases were summarized using
+random effects meta-analysis.
 
 For the second set of analyses, we used the standardized framework for
 risk-based assessment of treatment effect heterogeneity, that follows
@@ -184,7 +190,7 @@ the directives of the PATH statement [@Kent2019; @KentEnE2019].
 Following data extraction, the framework was applied in
 two steps. First, we derived individualized risk predictions for the
 three efficacy outcomes. We built the prediction models using LASSO
-logistic regression on the propensity score matched (1:4)
+logistic regression on the propensity score matched (1:10)
 subpopulation of the pooled treatment arms, aiming to remove any
 effect of measured confounding that may cause differential fit of our
 models across treatment arms. We considered the same large set of
@@ -199,17 +205,21 @@ on the propensity score matched (1:4) subset of the risk subgroup
 subset. We derived relative effect estimates using Cox proportional
 hazards models only with treatment as a predictor. Absolute effect
 estimates were calculated based on the difference of the Kaplan-Meier
-estimates, on day 730 after treatment initiation.
+estimates, on day 365 after treatment initiation.
 
-For each outcome we used the derived prediction models to divide the
-population in 4 equally-sized subgroups, based on the quarters of the
-predicted risk distribution. Within each of these risk-based subgroups
-we developed a new propensity score model. Our analyses were performed
-on the propensity score matched (1:4) subset of the risk subgroup
-subset. We derived relative effect estimates using Cox proportional
-hazards models only with treatment as a predictor. Absolute effect
-estimates were calculated based on the difference of the Kaplan-Meier
-estimates, on day 730 after treatment initiation.
+For each outcome we used the derived prediction models to stratify the
+study population using two separate stratifcation schemes. In the
+first approach, we divide the population into the lowest 75\% and the
+top 25\% hip fracture risk subgroups. In the second approach, the
+population is divided using existing guidelines on teriparatide
+treatment based on major fracture risk (REF!!). Within each of these
+risk-based subgroups we developed a new propensity score model. Our
+analyses were performed on the propensity score matched (1:10) subset
+of the risk subgroup subset. We derived relative effect estimates
+using Cox proportional hazards models only with treatment as a
+predictor. Absolute effect estimates were calculated based on the
+difference of the Kaplan-Meier estimates, on day 365 after treatment
+initiation.
 
 Residual study bias from unmeasured confounding can still be present
 in observational studies, which often may not be visible when
@@ -227,6 +237,66 @@ interest [@Schuemie2013; @Schuemie2016].
 
 ***[ Introductory stuff for Table 1 !! ]***
 
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+metaCalibrateOverall <- readRDS(here("data/processed/metaCalibrateOverall.rds"))
+
+suffix <- "age_50_tr_1_q_25_75"
+
+calibrateOverallResults <- readRDS(
+    here(
+      file.path(
+          "data/processed",
+          paste0(
+              paste(
+                  "calibrateOverallResults",
+                  suffix,
+                  sep = "_"
+              ),
+              ".rds"
+          )
+      )
+    )
+)
+
+```
+
+In all databases adequate equipoise of the preference score
+distributions was achieved (Figure \ref{fig:overallPsDensity}). After
+matching all baseline covariates (>35,000 in each database) were well
+balanced (Figure \ref{fig:overallCovariateBalance}). This indicates
+that we were able account for the majority of the observed
+condfounding present in all databases. However, negative control
+analyses time falsely favored oral bisphosphonates over teriparatide,
+which suggests the presence of residual unobserved confoundng (Figure
+\ref{fig:overallNcPlot}).
+
+In terms of hip fracture risk we estimated calibrated hazard ratios of
+`r calibrateOverallResults %>% filter(database == "ccae", outcome == 101) %>% pull(hr)`
+(`r calibrateOverallResults %>% filter(database == "ccae", outcome == 101) %>% pull(lower)`
+to
+`r calibrateOverallResults %>% filter(database == "ccae", outcome == 101) %>% pull(upper)`;
+95\% CI), 
+`r calibrateOverallResults %>% filter(database == "optum_extended_dod", outcome == 101) %>% pull(hr)`
+(`r calibrateOverallResults %>% filter(database == "optum_extended_dod", outcome == 101) %>% pull(lower)`
+to
+`r calibrateOverallResults %>% filter(database == "optum_extended_dod", outcome == 101) %>% pull(upper)`;
+95\% CI) and
+`r calibrateOverallResults %>% filter(database == "optum_ehr", outcome == 101) %>% pull(hr)`
+(`r calibrateOverallResults %>% filter(database == "optum_ehr", outcome == 101) %>% pull(lower)`
+to
+`r calibrateOverallResults %>% filter(database == "optum_ehr", outcome == 101) %>% pull(upper)`;
+95\% CI), in CCAE, Optum-DOD and Optum-EHR respectively. The
+calibrated meta-analytic hazard ratio of the overall effect of
+teriparatide compared to oral bisphosphonates was
+`r metaCalibrateOverall %>% filter(outcome == 101) %>% pull(hr)`
+(`r metaCalibrateOverall %>% filter(outcome == 101) %>% pull(lower)`
+to
+`r metaCalibrateOverall %>% filter(outcome == 101) %>% pull(upper)`;
+95\% CI). Results for major osteoporotic and vertebral fractures are
+provided in the supplement.
+
+When using the internally developed hip fracture risk prediction models to divide the population into lower 75\% and top 25\% risk subgroups, we observed....
+
 \newpage
 # Discussion
 
@@ -243,6 +313,10 @@ interest [@Schuemie2013; @Schuemie2016].
 
 \newpage
 # Tables and figures
+\newpage
+```{r overallPsDensity, cache = TRUE, echo = FALSE, warning=FALSE, fig.cap="Calibrated overall results"}
+grid::grid.raster(tiff::readTIFF(here("figures/OverallPsDensity.tiff")))
+```
 
 \newpage
 ```{r overallCovariateBalance, cache = TRUE, echo = FALSE, warning=FALSE, fig.cap="Calibrated overall results"}
@@ -250,17 +324,22 @@ grid::grid.raster(tiff::readTIFF(here("figures/OverallCovariateBalance.tiff")))
 ```
 
 \newpage
-```{r overallPsDensity, cache = FALSE, echo = FALSE, warning=FALSE, fig.cap="Calibrated overall results"}
-grid::grid.raster(tiff::readTIFF(here("figures/OverallPsDensity.tiff")))
-```
-
-\newpage
-```{r overallNcPlot, cache = FALSE, echo = FALSE, warning=FALSE, fig.cap="Overall negative control plot."}
+```{r overallNcPlot, cache = TRUE, echo = FALSE, warning=FALSE, fig.cap="Overall negative control plot."}
 grid::grid.raster(tiff::readTIFF(here("figures/OverallNcPlot.tiff")))
 ```
 
 
 \newpage
-```{r plotMeta, echo=FALSE, warning=FALSE, fig.cap="Calibrated hazard ratios for the 3 outcomes of interest across the 3 considered databases using a set of 126 negative controls. Values below 1 favour teriparatide, while values above 1 favour bisphosphonates.", out.width = '100%'}
+```{r plotMeta, cache=TRUE, echo=FALSE, warning=FALSE, fig.cap="Calibrated hazard ratios for the 3 outcomes of interest across the 3 considered databases using a set of 126 negative controls. Values below 1 favour teriparatide, while values above 1 favour bisphosphonates.", out.width = '100%'}
 grid::grid.raster(tiff::readTIFF(here::here("figures/plotMeta.tiff")))
+```
+
+\newpage
+```{r plotMetaRiskStratified, cache=TRUE, echo=FALSE, warning=FALSE, fig.cap="Calibrated hazard ratios for the 3 outcomes of interest across the 3 considered databases using a set of 126 negative controls. Values below 1 favour teriparatide, while values above 1 favour bisphosphonates.", out.width = '100%'}
+grid::grid.raster(tiff::readTIFF(here::here("figures/plotMetaRiskStratified.tiff")))
+```
+
+\newpage
+```{r plotAbsoluteRiskStratified, cache=FALSE, echo=FALSE, warning=FALSE, fig.cap="Calibrated hazard ratios for the 3 outcomes of interest across the 3 considered databases using a set of 126 negative controls. Values below 1 favour teriparatide, while values above 1 favour bisphosphonates.", out.width = '100%'}
+grid::grid.raster(tiff::readTIFF(here::here("figures/plotAbsoluteHip.tiff")))
 ```

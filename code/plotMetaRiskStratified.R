@@ -26,7 +26,8 @@ calibrateRiskStratified <- readRDS(
     )
 ) %>%
     filter(
-        stratOutcome == 101
+      stratOutcome == 101,
+      estOutcome == 101
     ) %>%
     rename("outcome" = "estOutcome")
 
@@ -43,7 +44,7 @@ metaCalibrateRiskStratified <- readRDS(
         )
     )
 ) %>%
-    filter(stratOutcome == 101) %>%
+    filter(stratOutcome == 101, estOutcome == 101) %>%
     rename("outcome" = "estOutcome")
 
 riskStratified <- calibrateRiskStratified %>%
@@ -72,20 +73,19 @@ metaRiskStratified <- metaCalibrateRiskStratified %>%
 
 combined <- rbind(riskStratified, metaRiskStratified) %>%
     mutate(
-        database = factor(
-            x = database,
-            levels = c("overall", "optum_extended_dod", "optum_ehr", "ccae"),
-            labels = c("Overall", "OPTUM (DoD)", "Panther", "CCAE")
-        ),
-        outcome = factor(
-            x = outcome,
-            levels = 101:103,
-            labels = c(
-                "Hip fracture",
-                "Major osteoporotic fracture",
-                "Vertebral fracture"
-            )
+      database = factor(
+        x = database,
+        levels = c("overall", "optum_extended_dod", "optum_ehr", "ccae"),
+        labels = c("Overall", "OPTUM (DoD)", "Panther", "CCAE")
+      ),
+      riskStratum = factor(
+        x = riskStratum,
+        levels = c("Q1", "Q2"),
+        labels = c(
+          "Lower 75%\nhip fracture risk",
+          "Upper 25%\nhip fracture risk"
         )
+      )
     )
 
 p <- ggplot(
@@ -99,7 +99,7 @@ p <- ggplot(
     )
 ) +
     facet_wrap(
-        ~riskStratum + outcome
+        ~riskStratum 
     ) +
     geom_point(
         aes(
@@ -119,7 +119,7 @@ p <- ggplot(
     ) +
     geom_text(
         label = "Favors Bisphosphonates", 
-        x     = 1.675, 
+        x     = 1.555, 
         y     = -.1, 
         color = "black",
         size  = 2
@@ -137,7 +137,7 @@ p <- ggplot(
     scale_x_continuous(
         breaks = c(0, 1, 2),
         labels = c("0", "1", "2"),
-        limits = c(0, 3)
+        limits = c(0, 2.2)
     ) +
     scale_color_manual(
         breaks = c("meta", "single"),
@@ -152,11 +152,13 @@ p <- ggplot(
         values = c(23, 21)
     ) +
     xlab("Calibrated hazard ratio") +
-    theme_classic() +
+    # theme_classic() +
+    ggthemes::theme_clean() +
     theme(
-        legend.position  = "none",
-        axis.title.y     = element_blank(),
-        strip.background = element_blank()
+      legend.position    = "none",
+      axis.title.y       = element_blank(),
+      strip.background   = element_blank(),
+      strip.text.x       = element_text(size = 10)
     )
 
-ggsave("figures/plotMetaRiskStratified.tiff", plot = p, height = 7, width = 9, compression = "lzw+p", dpi = 1000)
+ggsave("figures/plotMetaRiskStratified.tiff", plot = p, height = 4, width = 7, compression = "lzw+p", dpi = 1000)
