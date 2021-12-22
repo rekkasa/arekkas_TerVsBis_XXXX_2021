@@ -235,6 +235,154 @@ interest [@Schuemie2013; @Schuemie2016].
 # Results
 ## Treatment effect heterogeneity
 
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+ccae <- tibble(
+  database = "ccae",
+  variable = c(
+    "Osteoarthritis",
+    "Rheumatoid arthritis",
+    "Renal impairment",
+    "Crohn's disease",
+    "Obesity",
+    "Antithrombotic agents",
+    "Drugs used in diabetes",
+    "Lipid modifying agents",
+    "Drugs for obstructive airway diseases",
+    "Immunosuppressants",
+    "Antineoplastic agents",
+    "Antiinflammatory and antireumatic agents",
+    "Opioids",
+    "Antiepileptics",
+    "Psycholeptics",
+    "Antidepressants"
+  ),
+  treatment = c(
+    41.7, 7.6, 4, 1.4, 4.8, 11.7, 7.2, 26.8, 44.3, 12.1,
+    11.8, 36.8, 43.3, 23.7, 40.7, 39.2
+  ),
+  comparator = c(
+    23.3, 4.1, 1.7, .7,
+    2.9, 6, 6.3, 29.2,
+    34.2, 6.2, 8.6, 28.4,
+    26.8, 12, 28.3, 28.4
+  ),
+  std_difference = c(
+    -.23, -.1, -.09, -.25,
+    -.07, -.14, -.03, .03,
+    -.11, -.14, -.07, -.1,
+    -.2, -.2, -.15, -.13
+  )
+)
+
+optum_ehr <- tibble(
+  database = "optum-ehr",
+  variable = c(
+    "Osteoarthritis",
+    "Rheumatoid arthritis",
+    "Renal impairment",
+    "Crohn's disease",
+    "Obesity",
+    "Antithrombotic agents",
+    "Drugs used in diabetes",
+    "Lipid modifying agents",
+    "Drugs for obstructive airway diseases",
+    "Immunosuppressants",
+    "Antineoplastic agents",
+    "Antiinflammatory and antireumatic agents",
+    "Opioids",
+    "Antiepileptics",
+    "Psycholeptics",
+    "Antidepressants"
+  ),
+  treatment = c(
+    39.6, 7.7, 8.3,
+    1, 5.9, 41.4, 11.3, 35.6,
+    48.4, 11.7, 12, 55.7, 49.7,
+    28, 44.3, 39.2 
+  ),
+  comparator = c(
+    30.3, 4.7, 8.4, .6, 6.2,
+    38.5, 12.4, 42.3, 42.2, 6.6,
+    8.2, 50.5, 33.4, 17.3, 34.5, 31
+  ),
+  std_difference = c(
+    -.11, -.09, 0, -.03, .01,
+    -.03, .02, .08, -.07, -.12,
+    -.09, -.05, -.18, -.16, -.11, -.1
+  )
+)
+
+optum_dod <- tibble(
+  database = "optum-dod",
+  variable = c(
+    "Osteoarthritis",
+    "Rheumatoid arthritis",
+    "Renal impairment",
+    "Crohn's disease",
+    "Obesity",
+    "Antithrombotic agents",
+    "Drugs used in diabetes",
+    "Lipid modifying agents",
+    "Drugs for obstructive airway diseases",
+    "Immunosuppressants",
+    "Antineoplastic agents",
+    "Antiinflammatory and antireumatic agents",
+    "Opioids",
+    "Antiepileptics",
+    "Psycholeptics",
+    "Antidepressants"
+  ),
+  treatment = c(
+    56.6, 10.3, 12.7, 1.1, 7.3,
+    18.9, 11.1, 38.5, 48.1, 12.8,
+    13.9, 37.3, 50.1, 27.2, 40.2, 41.1
+  ),
+  comparator = c(
+    38.6, 5.3, 9.4, .5, 5.9,
+    12.6, 11.8, 43.1, 37, 5.8,
+    8.9, 28.2, 29.6, 15, 26.8, 29
+  ),
+  std_difference = c(
+    -.18, -.13, -.07, -.04, -.04,
+    -.11, .02, .05, -.12, -.16,
+    -.11, -.11, -.23, -.15, -.16, -.15
+  )
+)
+
+table1 <- bind_rows(ccae, optum_dod, optum_ehr) 
+
+table1 %>%
+  pivot_wider(
+    names_from = database, 
+    values_from = c(treatment, comparator, std_difference)
+  ) %>% 
+  relocate(
+    "variable", 
+    "treatment_ccae", 
+    "comparator_ccae", 
+    "std_difference_ccae",
+    "treatment_optum-dod",
+    "comparator_optum-dod", 
+    "std_difference_optum-dod"
+) %>%
+kbl(
+  format = "latex",
+  align = "r",
+  booktabs = TRUE,
+  col.names = c(
+    "Variable",
+    rep(
+      c("Teriparatide", "Bisphosphonates", "Std. diff."),
+      3
+    )
+  )
+) %>%
+add_header_above(
+  c(" " = 1, "CCAE" = 3, "OPTUM-DOD" = 3, "OPTUM-EHR" = 3)
+)
+```
+
 ***[ Introductory stuff for Table 1 !! ]***
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -295,7 +443,172 @@ to
 95\% CI). Results for major osteoporotic and vertebral fractures are
 provided in the supplement.
 
-When using the internally developed hip fracture risk prediction models to divide the population into lower 75\% and top 25\% risk subgroups, we observed....
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+suffix <- "age_50_tr_1_q_25_75"
+
+calibrateRiskStratified <- readRDS(
+    file.path(
+        here(
+          "data/processed",
+          paste0(
+              paste(
+                  "calibrateRiskStratified",
+                  suffix,
+                  sep = "_"
+              ),
+              ".rds"
+          )
+        )
+    )
+) %>%
+    filter(
+      stratOutcome == 101,
+      estOutcome == 101
+    ) %>%
+    rename("outcome" = "estOutcome")
+
+metaCalibrateRiskStratified <- readRDS(
+    file.path(
+      here(
+        "data/processed",
+        paste0(
+            paste(
+                "metaCalibrateRiskStratified",
+                suffix,
+                sep = "_"
+            ),
+            ".rds"
+        )
+    )
+  )
+) %>%
+    filter(stratOutcome == 101, estOutcome == 101) %>%
+    rename("outcome" = "estOutcome")
+
+riskStratified <- calibrateRiskStratified %>%
+    mutate(
+        hr = exp(logRr),
+        lower    = exp(logLb95Rr),
+        upper    = exp(logUb95Rr)
+    ) %>%
+    select(-contains("Rr")) %>%
+    mutate(
+        type = "single",
+        position = case_when(
+            database == "ccae" ~ 5,
+            database == "optum_extended_dod" ~ 4,
+            database == "optum_ehr" ~ 3
+        )
+    )
+
+metaRiskStratified <- metaCalibrateRiskStratified %>%
+    mutate(
+        database = "overall",
+        type     = "meta",
+        position = 1
+    ) %>%
+    relocate(database, .after = stratOutcome)
+
+combined <- rbind(riskStratified, metaRiskStratified)
+
+absolute <- readRDS(here("data/processed/mappedOverallAbsoluteResults.rds")) %>%
+    filter(
+        analysisType == "age_50_tr_1_q_25_75",
+        stratOutcome == 101,
+        estOutcome   == 101,
+        database != "mdcr"
+    ) %>%
+    mutate(
+        estimate = 100 * estimate,
+        lower    = 100 * lower,
+        upper    = 100 * upper
+    )
+```
+
+When using the internally developed hip fracture risk prediction
+models to divide the population into lower 75\% and top 25\% risk
+subgroups, we estimated calibrated hazard ratios of 
+`r combined %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(hr)`
+(`r combined %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(lower)`
+to
+`r combined %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(upper)`;
+95\% CI),
+`r combined %>% filter(database == "optum_extended_dod", riskStratum == "Q1") %>% pull(hr)`
+(`r combined %>% filter(database == "optum_extended_dod", riskStratum == "Q1") %>% pull(lower)`
+to
+`r combined %>% filter(database == "optum_extended_dod", riskStratum == "Q1") %>% pull(upper)`;
+95\% CI) and
+`r combined %>% filter(database == "optum_ehr", riskStratum == "Q1") %>% pull(hr)`
+(`r combined %>% filter(database == "optum_ehr", riskStratum == "Q1") %>% pull(lower)`
+to
+`r combined %>% filter(database == "optum_ehr", riskStratum == "Q1") %>% pull(upper)`;
+95\% CI) in the lower 75\% hip fracture risk subgroup in CCAE,
+Optum-DOD and Optum-EHR, respectively. These translated to absolute risk reductions of 
+`r absolute %>% filter(riskStratum == "Q1", database == "ccae") %>% pull(estimate)`
+(`r absolute %>% filter(riskStratum == "Q1", database == "ccae") %>% pull(lower)`
+to
+`r absolute %>% filter(riskStratum == "Q1", database == "ccae") %>% pull(upper)`;
+95\% CI), 
+`r absolute %>% filter(riskStratum == "Q1", database == "optum_extended_dod") %>% pull(estimate)`
+(`r absolute %>% filter(riskStratum == "Q1", database == "optum_extended_dod") %>% pull(lower)`
+to
+`r absolute %>% filter(riskStratum == "Q1", database == "optum_extended_dod") %>% pull(upper)`;
+95\% CI) and
+`r absolute %>% filter(riskStratum == "Q1", database == "optum_ehr") %>% pull(estimate)`
+(`r absolute %>% filter(riskStratum == "Q1", database == "optum_ehr") %>% pull(lower)`
+to
+`r absolute %>% filter(riskStratum == "Q1", database == "optum_ehr") %>% pull(upper)`;
+95\% CI) in CCAE, Optum-DOD and Optum-EHR respectively. Regarding hip
+fracture risk, the overall meta-analytic hazard ratio of the effect of
+teriparatide compared to oral bisphosphonates in the lower 75\% hip
+fracture risk subgroup was
+`r combined %>% filter(database == "overall", riskStratum == "Q1") %>% pull(hr)`
+(`r combined %>% filter(database == "overall", riskStratum == "Q1") %>% pull(lower)`
+to
+`r combined %>% filter(database == "overall", riskStratum == "Q1") %>% pull(upper)`;
+95\% CI) across all 3 databases in the lower risk subgroup.
+
+In the upper 25\% hip fracture risk subgroup we estimated hazard ratios of
+`r combined %>% filter(database == "ccae", riskStratum == "Q2") %>% pull(hr)`
+(`r combined %>% filter(database == "ccae", riskStratum == "Q2") %>% pull(lower)`
+to
+`r combined %>% filter(database == "ccae", riskStratum == "Q2") %>% pull(upper)`;
+95\% CI),
+`r combined %>% filter(database == "optum_extended_dod", riskStratum == "Q2") %>% pull(hr)`
+(`r combined %>% filter(database == "optum_extended_dod", riskStratum == "Q2") %>% pull(lower)`
+to
+`r combined %>% filter(database == "optum_extended_dod", riskStratum == "Q2") %>% pull(upper)`;
+95\% CI) and
+`r combined %>% filter(database == "optum_ehr", riskStratum == "Q2") %>% pull(hr)`
+(`r combined %>% filter(database == "optum_ehr", riskStratum == "Q2") %>% pull(lower)`
+to
+`r combined %>% filter(database == "optum_ehr", riskStratum == "Q2") %>% pull(upper)`;
+95\% CI) in the lower 75\% hip fracture risk subgroup in CCAE,
+Optum-DOD and Optum-EHR, respectively. These translated to absolute risk reductions of 
+`r absolute %>% filter(riskStratum == "Q2", database == "ccae") %>% pull(estimate)`
+(`r absolute %>% filter(riskStratum == "Q2", database == "ccae") %>% pull(lower)`
+to
+`r absolute %>% filter(riskStratum == "Q2", database == "ccae") %>% pull(upper)`;
+95\% CI), 
+`r absolute %>% filter(riskStratum == "Q2", database == "optum_extended_dod") %>% pull(estimate)`
+(`r absolute %>% filter(riskStratum == "Q2", database == "optum_extended_dod") %>% pull(lower)`
+to
+`r absolute %>% filter(riskStratum == "Q2", database == "optum_extended_dod") %>% pull(upper)`;
+95\% CI) and
+`r absolute %>% filter(riskStratum == "Q2", database == "optum_ehr") %>% pull(estimate)`
+(`r absolute %>% filter(riskStratum == "Q2", database == "optum_ehr") %>% pull(lower)`
+to
+`r absolute %>% filter(riskStratum == "Q2", database == "optum_ehr") %>% pull(upper)`;
+95\% CI) in CCAE, Optum-DOD and Optum-EHR respectively. Regarding hip
+fracture risk, the overall meta-analytic hazard ratio of the effect of
+teriparatide compared to oral bisphosphonates in the lower 75\% hip
+fracture risk subgroup was
+`r combined %>% filter(database == "overall", riskStratum == "Q2") %>% pull(hr)`
+(`r combined %>% filter(database == "overall", riskStratum == "Q2") %>% pull(lower)`
+to
+`r combined %>% filter(database == "overall", riskStratum == "Q2") %>% pull(upper)`;
+95\% CI) across all 3 databases in the upper risk subgroup.
+
 
 \newpage
 # Discussion

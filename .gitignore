@@ -11,3 +11,4 @@ rsconnect
 *_cache
 manuscript_files
 Rplots*
+*.log
