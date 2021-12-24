@@ -235,154 +235,6 @@ interest [@Schuemie2013; @Schuemie2016].
 # Results
 ## Treatment effect heterogeneity
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-
-ccae <- tibble(
-  database = "ccae",
-  variable = c(
-    "Osteoarthritis",
-    "Rheumatoid arthritis",
-    "Renal impairment",
-    "Crohn's disease",
-    "Obesity",
-    "Antithrombotic agents",
-    "Drugs used in diabetes",
-    "Lipid modifying agents",
-    "Drugs for obstructive airway diseases",
-    "Immunosuppressants",
-    "Antineoplastic agents",
-    "Antiinflammatory and antireumatic agents",
-    "Opioids",
-    "Antiepileptics",
-    "Psycholeptics",
-    "Antidepressants"
-  ),
-  treatment = c(
-    41.7, 7.6, 4, 1.4, 4.8, 11.7, 7.2, 26.8, 44.3, 12.1,
-    11.8, 36.8, 43.3, 23.7, 40.7, 39.2
-  ),
-  comparator = c(
-    23.3, 4.1, 1.7, .7,
-    2.9, 6, 6.3, 29.2,
-    34.2, 6.2, 8.6, 28.4,
-    26.8, 12, 28.3, 28.4
-  ),
-  std_difference = c(
-    -.23, -.1, -.09, -.25,
-    -.07, -.14, -.03, .03,
-    -.11, -.14, -.07, -.1,
-    -.2, -.2, -.15, -.13
-  )
-)
-
-optum_ehr <- tibble(
-  database = "optum-ehr",
-  variable = c(
-    "Osteoarthritis",
-    "Rheumatoid arthritis",
-    "Renal impairment",
-    "Crohn's disease",
-    "Obesity",
-    "Antithrombotic agents",
-    "Drugs used in diabetes",
-    "Lipid modifying agents",
-    "Drugs for obstructive airway diseases",
-    "Immunosuppressants",
-    "Antineoplastic agents",
-    "Antiinflammatory and antireumatic agents",
-    "Opioids",
-    "Antiepileptics",
-    "Psycholeptics",
-    "Antidepressants"
-  ),
-  treatment = c(
-    39.6, 7.7, 8.3,
-    1, 5.9, 41.4, 11.3, 35.6,
-    48.4, 11.7, 12, 55.7, 49.7,
-    28, 44.3, 39.2 
-  ),
-  comparator = c(
-    30.3, 4.7, 8.4, .6, 6.2,
-    38.5, 12.4, 42.3, 42.2, 6.6,
-    8.2, 50.5, 33.4, 17.3, 34.5, 31
-  ),
-  std_difference = c(
-    -.11, -.09, 0, -.03, .01,
-    -.03, .02, .08, -.07, -.12,
-    -.09, -.05, -.18, -.16, -.11, -.1
-  )
-)
-
-optum_dod <- tibble(
-  database = "optum-dod",
-  variable = c(
-    "Osteoarthritis",
-    "Rheumatoid arthritis",
-    "Renal impairment",
-    "Crohn's disease",
-    "Obesity",
-    "Antithrombotic agents",
-    "Drugs used in diabetes",
-    "Lipid modifying agents",
-    "Drugs for obstructive airway diseases",
-    "Immunosuppressants",
-    "Antineoplastic agents",
-    "Antiinflammatory and antireumatic agents",
-    "Opioids",
-    "Antiepileptics",
-    "Psycholeptics",
-    "Antidepressants"
-  ),
-  treatment = c(
-    56.6, 10.3, 12.7, 1.1, 7.3,
-    18.9, 11.1, 38.5, 48.1, 12.8,
-    13.9, 37.3, 50.1, 27.2, 40.2, 41.1
-  ),
-  comparator = c(
-    38.6, 5.3, 9.4, .5, 5.9,
-    12.6, 11.8, 43.1, 37, 5.8,
-    8.9, 28.2, 29.6, 15, 26.8, 29
-  ),
-  std_difference = c(
-    -.18, -.13, -.07, -.04, -.04,
-    -.11, .02, .05, -.12, -.16,
-    -.11, -.11, -.23, -.15, -.16, -.15
-  )
-)
-
-table1 <- bind_rows(ccae, optum_dod, optum_ehr) 
-
-table1 %>%
-  pivot_wider(
-    names_from = database, 
-    values_from = c(treatment, comparator, std_difference)
-  ) %>% 
-  relocate(
-    "variable", 
-    "treatment_ccae", 
-    "comparator_ccae", 
-    "std_difference_ccae",
-    "treatment_optum-dod",
-    "comparator_optum-dod", 
-    "std_difference_optum-dod"
-) %>%
-kbl(
-  format = "latex",
-  align = "r",
-  booktabs = TRUE,
-  col.names = c(
-    "Variable",
-    rep(
-      c("Teriparatide", "Bisphosphonates", "Std. diff."),
-      3
-    )
-  )
-) %>%
-add_header_above(
-  c(" " = 1, "CCAE" = 3, "OPTUM-DOD" = 3, "OPTUM-EHR" = 3)
-)
-```
-
 ***[ Introductory stuff for Table 1 !! ]***
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -626,6 +478,194 @@ to
 
 \newpage
 # Tables and figures
+\newpage
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+ccae <- tibble(
+  database = "ccae",
+  variable = c(
+    "Osteoarthritis",
+    "Rheumatoid arthritis",
+    "Renal impairment",
+    "Crohn's disease",
+    "Obesity",
+    "Antithrombotic agents",
+    "Drugs used in diabetes",
+    "Lipid modifying agents",
+    "Drugs for obstructive airway diseases",
+    "Immunosuppressants",
+    "Antineoplastic agents",
+    "Antiinflammatory and antireumatic agents",
+    "Opioids",
+    "Antiepileptics",
+    "Psycholeptics",
+    "Antidepressants"
+  ),
+  type = c(
+    rep("condition", 5),
+    rep("medication", 11)
+  ),
+  treatment = c(
+    41.7, 7.6, 4, 1.4, 4.8, 11.7, 7.2, 26.8, 44.3, 12.1,
+    11.8, 36.8, 43.3, 23.7, 40.7, 39.2
+  ),
+  comparator = c(
+    23.3, 4.1, 1.7, .7,
+    2.9, 6, 6.3, 29.2,
+    34.2, 6.2, 8.6, 28.4,
+    26.8, 12, 28.3, 28.4
+  ),
+  std_difference = -c(
+    -.23, -.1, -.09, -.25,
+    -.07, -.14, -.03, .03,
+    -.11, -.14, -.07, -.1,
+    -.2, -.2, -.15, -.13
+  )
+) %>%
+  group_by(type) %>%
+  arrange(type, variable) %>%
+  ungroup() %>%
+  select(-type)
+
+optum_ehr <- tibble(
+  database = "optum-ehr",
+  variable = c(
+    "Osteoarthritis",
+    "Rheumatoid arthritis",
+    "Renal impairment",
+    "Crohn's disease",
+    "Obesity",
+    "Antithrombotic agents",
+    "Drugs used in diabetes",
+    "Lipid modifying agents",
+    "Drugs for obstructive airway diseases",
+    "Immunosuppressants",
+    "Antineoplastic agents",
+    "Antiinflammatory and antireumatic agents",
+    "Opioids",
+    "Antiepileptics",
+    "Psycholeptics",
+    "Antidepressants"
+  ),
+  type = c(
+    rep("condition", 5),
+    rep("medication", 11)
+  ),
+  treatment = c(
+    39.6, 7.7, 8.3,
+    1, 5.9, 41.4, 11.3, 35.6,
+    48.4, 11.7, 12, 55.7, 49.7,
+    28, 44.3, 39.2 
+  ),
+  comparator = c(
+    30.3, 4.7, 8.4, .6, 6.2,
+    38.5, 12.4, 42.3, 42.2, 6.6,
+    8.2, 50.5, 33.4, 17.3, 34.5, 31
+  ),
+  std_difference = -c(
+    -.11, -.09, 0, -.03, .01,
+    -.03, .02, .08, -.07, -.12,
+    -.09, -.05, -.18, -.16, -.11, -.1
+  )
+) %>%
+  group_by(type) %>%
+  arrange(type, variable) %>%
+  ungroup() %>%
+  select(-type)
+
+optum_dod <- tibble(
+  database = "optum-dod",
+  variable = c(
+    "Osteoarthritis",
+    "Rheumatoid arthritis",
+    "Renal impairment",
+    "Crohn's disease",
+    "Obesity",
+    "Antithrombotic agents",
+    "Drugs used in diabetes",
+    "Lipid modifying agents",
+    "Drugs for obstructive airway diseases",
+    "Immunosuppressants",
+    "Antineoplastic agents",
+    "Antiinflammatory and antireumatic agents",
+    "Opioids",
+    "Antiepileptics",
+    "Psycholeptics",
+    "Antidepressants"
+  ),
+  type = c(
+    rep("condition", 5),
+    rep("medication", 11)
+  ),
+  treatment = c(
+    56.6, 10.3, 12.7, 1.1, 7.3,
+    18.9, 11.1, 38.5, 48.1, 12.8,
+    13.9, 37.3, 50.1, 27.2, 40.2, 41.1
+  ),
+  comparator = c(
+    38.6, 5.3, 9.4, .5, 5.9,
+    12.6, 11.8, 43.1, 37, 5.8,
+    8.9, 28.2, 29.6, 15, 26.8, 29
+  ),
+  std_difference = -c(
+    -.18, -.13, -.07, -.04, -.04,
+    -.11, .02, .05, -.12, -.16,
+    -.11, -.11, -.23, -.15, -.16, -.15
+  )
+) %>%
+  group_by(type) %>%
+  arrange(type, variable) %>%
+  ungroup() %>%
+  select(-type)
+
+table1 <- bind_rows(ccae, optum_dod, optum_ehr) 
+
+table1 %>%
+  pivot_wider(
+    names_from = database, 
+    values_from = c(treatment, comparator, std_difference)
+  ) %>% 
+  relocate(
+    "variable", 
+    "treatment_ccae", 
+    "comparator_ccae", 
+    "std_difference_ccae",
+    "treatment_optum-dod",
+    "comparator_optum-dod", 
+    "std_difference_optum-dod"
+  ) %>%
+  kbl(
+    format = "latex",
+    align = c("l", rep("r", 9)),
+    longtable = TRUE,
+    booktabs = TRUE,
+    col.names = c(
+      "Variable",
+      rep(
+        c("Teriparatide (%)", "Bisphosphonates (%)", "Std. diff."),
+        3
+      )
+    ),
+    caption = "Baseline patient characteristics."
+  ) %>%
+  pack_rows(
+    group_label = "Conditions",
+    start_row = 1,
+    end_row = 5
+  ) %>%
+  pack_rows(
+    group_label = "Medications",
+    start_row = 6,
+    end_row = 16,
+  ) %>%
+  landscape() %>%
+  kable_styling(font_size = 7) %>%
+  add_header_above(
+    c(" " = 1, "CCAE" = 3, "OPTUM-DOD" = 3, "OPTUM-EHR" = 3)
+  )
+```
+
 \newpage
 ```{r overallPsDensity, cache = TRUE, echo = FALSE, warning=FALSE, fig.cap="Calibrated overall results"}
 grid::grid.raster(tiff::readTIFF(here("figures/OverallPsDensity.tiff")))
